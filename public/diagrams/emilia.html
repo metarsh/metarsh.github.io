@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Emilia's Architecture</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --canvas: #f5f2eb;
+        --card-white: #ffffff;
+        --card-tan: #ede7dc;
+        --card-blue: #e4ecfe;
+        --border-tan: #dcd5c7;
+        --border-card: #dfdad0;
+        --border-blue: #b8cefc;
+        --ink: #1d1c1a;
+        --ink2: #6e6c64;
+        --blue-text: #1c3ba8;
+        --font: "Geist", system-ui, -apple-system, sans-serif;
+        --mono: "Geist Mono", monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+      }
+      body {
+        background: var(--canvas);
+        font-family: var(--font);
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: auto;
+      }
+
+      .stage-wrapper {
+        width: 1200px;
+        height: 705px;
+        position: relative;
+        background: var(--canvas);
+        user-select: none;
+        flex-shrink: 0;
+      }
+
+      /* Typography */
+      .title-bold {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .title-reg {
+        font-size: 22px;
+        font-weight: 400;
+        color: var(--ink2);
+        margin-left: 8px;
+      }
+
+      /* Cards */
+      .card {
+        position: absolute;
+        border-radius: 10px;
+        padding: 12px 16px;
+        box-shadow: 0 1px 2px rgba(29, 28, 26, 0.03);
+      }
+      .card-tan {
+        background: var(--card-tan);
+        border: 1px solid var(--border-tan);
+      }
+      .card-white {
+        background: var(--card-white);
+        border: 1px solid var(--border-card);
+      }
+      .card-blue {
+        background: var(--card-blue);
+        border: 1px solid var(--border-blue);
+      }
+      .card-core {
+        background: var(--card-white);
+        border: 2px solid var(--ink);
+        box-shadow: 0 2px 6px rgba(29, 28, 26, 0.06);
+      }
+
+      .card-h {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .card-p {
+        font-size: 11.5px;
+        color: var(--ink2);
+        line-height: 1.35;
+        margin-top: 6px;
+      }
+      .card-sub {
+        font-size: 11px;
+        color: #85827a;
+        line-height: 1.35;
+      }
+
+      /* Containers */
+      .container-box {
+        position: absolute;
+        border-radius: 14px;
+        border: 1px solid var(--border-card);
+        background: rgba(255, 255, 255, 0.3);
+        pointer-events: none;
+      }
+      .container-label {
+        position: absolute;
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: #737067;
+        text-transform: uppercase;
+      }
+
+      /* Official Brand Icons */
+      .icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+
+      /* Wires */
+      svg.wires {
+        position: absolute;
+        inset: 0;
+        width: 1200px;
+        height: 705px;
+        pointer-events: none;
+      }
+      .wire-pill {
+        position: absolute;
+        font-size: 10.5px;
+        color: var(--ink2);
+        font-family: var(--font);
+        background: var(--canvas);
+        padding: 2px 6px;
+        border-radius: 4px;
+        border: 1px solid rgba(223, 218, 208, 0.6);
+        white-space: nowrap;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage-wrapper">
+      <!-- Title -->
+      <div style="position: absolute; left: 45px; top: 30px">
+        <span class="title-bold">Emilia</span>
+        <span class="title-reg">architecture</span>
+      </div>
+
+      <!-- Supergroup Admins -->
+      <div class="card card-tan" style="left: 890px; top: 22px; width: 255px">
+        <div class="card-h">
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1d1c1a"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          <div>Supergroup Admins</div>
+        </div>
+        <div class="card-p" style="margin-top: 4px">
+          reviews exceptions, sets filters &amp; permissions
+        </div>
+      </div>
+
+      <!-- Telegram MTProto -->
+      <div class="card card-tan" style="left: 45px; top: 160px; width: 220px">
+        <div class="card-h">
+          <svg class="icon" viewBox="0 0 24 24" fill="#24A1DE">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"
+            />
+          </svg>
+          <div>Telegram MTProto</div>
+        </div>
+        <div class="card-p">Pyrogram + Telethon · ~10,000 msgs/min</div>
+      </div>
+
+      <!-- Groq -->
+      <div class="card card-blue" style="left: 45px; top: 375px; width: 220px">
+        <div class="card-h">
+          <svg class="icon" viewBox="0 0 24 24" fill="#0081FB">
+            <path
+              d="M10.73.032c-1.333 0-2.032 1.016-2.032 2.285 0 2.223 2.127 4.953 4.318 4.953 1.301 0 2-.953 2-2.254 0-2.254-2.095-4.984-4.286-4.984m8.413 2.984c-1.968 0-3.397 2.73-3.397 4.825 0 1.556.794 3.016 2.254 3.016 2 0 3.365-2.762 3.365-4.794 0-1.523-.762-3.047-2.222-3.047M4.857 4.159c-1.968 0-3.778 1.016-3.778 2.54 0 1.65 2.16 2.793 4.254 2.793 1.873 0 3.778-.92 3.778-2.508 0-1.682-2.159-2.825-4.254-2.825m-.222 6.476C2.413 10.635 0 13.175 0 15.397c0 1.301.825 2.159 2.095 2.159 2.19 0 4.603-2.508 4.603-4.794 0-1.27-.761-2.127-2.063-2.127m16.667.698c-2.223 0-5.016 1.62-5.016 3.651 0 1.238 1.047 2.19 2.698 2.19 2.159 0 5.016-1.587 5.016-3.682 0-1.302-1.08-2.159-2.698-2.159M7.619 16c-1.524 0-2.38 1.746-2.38 3.429 0 2.063 1.269 4.54 3.047 4.54 1.524 0 2.38-1.81 2.38-3.461C10.667 18.57 9.46 16 7.62 16m6.571 1.016c-1.333 0-2.476.667-2.476 2.032 0 2.095 2.667 4.063 4.92 4.063 1.366 0 2.54-.73 2.54-2.063 0-2.032-2.698-4.032-4.984-4.032"
+            />
+          </svg>
+          <div style="color: var(--blue-text); font-weight: 700">Groq</div>
+        </div>
+        <div class="card-p" style="color: #556994">AI character persona, advisory moderation</div>
+      </div>
+
+      <!-- MAIN APP CONTAINER -->
+      <div class="container-box" style="left: 295px; top: 110px; width: 850px; height: 375px"></div>
+      <div class="container-label" style="left: 315px; top: 124px">ASYNC PYTHON</div>
+
+      <!-- MAIN APP: Event Ingress Router -->
+      <div class="card card-white" style="left: 335px; top: 160px; width: 235px">
+        <div class="card-h">
+          <svg class="icon" viewBox="0 0 24 24" fill="#3776AB">
+            <path
+              d="M11.91 2C6.88 2 7.21 4.18 7.21 4.18L7.22 6.45H12V7.18H5.16S2 6.82 2 11.89C2 16.96 4.76 16.71 4.76 16.71H6.4V14.4H11.23V19.46H16.84S20.08 19.46 20.08 14.4V11.89H15.25V11.17H22S22.37 6.82 17.3 6.82H15.65V9.13H10.82V4.18S10.82 2 11.91 2Z"
+            />
+          </svg>
+          <div>Event Ingress Router</div>
+        </div>
+        <div class="card-p">MTProto packet decode, event ID &amp; signature checks</div>
+      </div>
+
+      <!-- MAIN APP: uvloop Async Engine -->
+      <div class="card card-core" style="left: 355px; top: 320px; width: 325px">
+        <div class="card-h">
+          <svg class="icon" viewBox="0 0 24 24" fill="#40B5A4">
+            <path
+              d="M20.534 19.21c-.573.117-1.183.506-1.656.594-1.044.193-1.66.007-1.108-.22.8-.332 3.44-.415 3.716-2.374.276-1.96.083-2.843-.055-3.34a7.179 7.179 0 0 0-.351-.891 3.633 3.633 0 0 0-.134-.523 1.66 1.66 0 0 1-.074-.228s-.034-.241.076-.476c.098-.208.433-.659.456-1.095v-.08a.762.762 0 0 0-.008-.087l-.002-.026a.802.802 0 0 0-.374-.542c-.123-.082-.29-.107-.382-.224.073-.23.306-.313.404-.501.06-.167.011-.343-.081-.503-.178-.2-.528-.372-.842-.49-.393-.147-.792-.264-1.062-.475-.285-.152-.477-.445-.302-.833a.703.703 0 0 0 .064-.3v-.028c-.001-.02-.004-.037-.006-.055a.538.538 0 0 0-.008-.042l-.006-.024-.008-.027c-.072-.243-.453-.31-.59-.323-.307-.027-.506-.111-.67-.163.132.069.264.16.433.228.106.044.26.07.389.112 0 0 .239.048.304.214a.59.59 0 0 1 0 .403l-.01.027c-.024.073-.05.143-.056.215-.022.286.153.434.246.673.167.159.406.324.736.473.298.134.653.215.874.348.127.077.36.263.354.399-.004.104-.195.245-.272.348-.056.074-.083.171-.132.24-.043.069-.099.112-.162.112-.083 0-.271.032-.147.041.124.01.446.161.446.161.435.18.727.514.567.99-.134.399-.442.732-.463 1.17-.023.467.19.85.218 1.22.046.623-.043 1.051-.164 1.52-.056.218-.086.434-.136.647-.213.906-.76 1.299-1.5 1.718-.322.181-.666.516-1.01.622-.056.017-.141-.009-.192 0-.317.057-.602.215-.927.274-.306.057-.628.03-.991.121-.184.066-.42.165-.559.223-.213.097-.422.199-.631.3l-.693.396s-.386.224.042.059c.344-.134 1.527-.722 1.031-.377-.342.172-.527.416-.83.624 0 0-1.016.504-1.169.645-.167.155-.372.069-.507.22a1.19 1.19 0 0 1-.49.332c-.138.046-.294.35-.506.506-.211.156-.671.11-1.076.285a2.373 2.373 0 0 1-.824.177c-.04.004-.08.006-.116.007H9.56a1.553 1.553 0 0 1-.556-.096c-.169-.062-.231-.03-.193-.01.038.02.148.124.148.124-.472 0-.601-.315-.819-.548.1-.014.381.055.238-.028-.283-.135-.827-.145-.838-.47-.008-.255.11-.2.11-.2.197.346.809.38 1.254.375.83-.01 1.393-.466 1.937-.723a9.87 9.87 0 0 0 .382-.246v.004c.171-.112.345-.22.492-.355.256-.236.429-.543.655-.804a.697.697 0 0 1 .146-.153c.064-.06.132-.115.208-.164l.003.006.03-.02-.006-.01c.548-.311 1.058-.655 1.489-1.072l.003-.005c.062-.056.386-.418.542-.593.185-.246.318-.557.395-.87.028-.114.01-.251.054-.374.069-.19.242-.36.355-.548.117-.195.195-.408.273-.622.341-.938.736-1.685 1.473-2.191.355-.244.787-.402 1.037-.772a1.665 1.665 0 0 1-.703.408c-.811.267-1.338.95-1.603 1.385a5.167 5.167 0 0 0-.477 1.22 4.06 4.06 0 0 0-.355-1.395c-.16-.37-.303-.761-.6-.996 0 0-.011.001-.058-.027-.046-.027.767-.048.767-.048.143.006.287.026.434.045a.373.373 0 0 1 .103.006c.447.079.91-.088 1.2-.298.15-.11.412-.197.628-.256.004-.01.025-.02.08-.03 0 0 .33-.104.682-.2a3.27 3.27 0 0 0 .533-.175.779.779 0 0 0 .187-.162c.104-.127.106-.28.192-.498.085-.217.216-.386.218-.573.006-.611-.573-1.098-1.2-.772.617-.16 1.056.142.982.723-.092.716-1.172 1.248-1.829 1.518-.26.107-.565.243-.873.274-.443.045-.846-.05-1.227-.025-.49.032-.815.291-1.228.324-.355.028-.307-.212-.615-.239-.063-.036-.257 0-.45-.01-.532.14-.874-.103-1.309-.299-.314-.141-.648-.27-.982-.299-.838-.07-1.348.046-2.033-.027-.193-.02-.594-.045-.784-.116-.593-.222-1.047-.141-1.69-.15-.469-.007-.903-.032-1.196.02-.08.014-.16.034-.245.05-.628.109-1.583.166-1.555.721.046-.032.033-.118.109-.124-.003.102-.006.204.027.274-.365-.01-.58-.262-.573-.548.012-.487.796-.69 1.337-.822.542-.13 1.105-.284 1.5-.348-.947.139-1.95.228-2.673.572a.778.778 0 0 1-.021-.108c-.058-.263-.183-.666-.27-1.058-.102-.451.055-1.242.055-1.242l.004.004c.065-.402.148-.58.228-.821.172-.513.726-.674 1.114-.723a1.742 1.742 0 0 0-.668.901c-.017.137-.03.264-.039.377.294-.914 1.113-1.256 1.113-1.256l.262-.283-.003.013c.452-.438 1.05-.777 1.809-.798.383-.01.845.09.844.466 0 .212-.167.392-.393.491a.311.311 0 0 0 .183-.019l.235-.263c.078-.192.07-.435-.06-.581.346-.296.884.036.845.428.101-.085.163-.247.094-.375.465-.273.726.39 1.194.235-.044-.133-.27-.106-.338-.217.612-.087 1.15.128 1.764.08.038.033.08.066.124.1-1.149.126-.215.126-.215.126.147-.014.5-.038.638-.014.225.04.37-.014.569-.092.004.009.024.008.036-.014.103-.041.222-.086.373-.127a.98.98 0 0 0 .174-.042l.024-.005.004-.004c.079-.027.153-.06.216-.09.58-.279 1.06-.934 1.554-1.278.819-.569 1.595.134 2.165.59l-.004.006c.143.098.332.218.537.344.537.233 1.245.437 1.623.811.302.299.405.684.535 1.083.122.373.357.702.49 1.12a.163.163 0 0 0 .05-.092c-.004-.036-.01-.073 0-.097l.008.007a1.047 1.047 0 0 0-.043-.249c-.112-.229-.309-.49-.285-.693 0 0 .697.36 1.488.718.273.123.522.326.74.559l.063-.002a.136.136 0 0 0-.004.065c.384.43.657.944.752 1.24a4.416 4.416 0 0 0 .16.412h.001c.014.025.023.05.032.074.115.247.227.448.258.503.1.124.181.285.268.42a11.375 11.375 0 0 1-2.465 8.17c-.09.011-.214.032-.378.066z"
+            />
+          </svg>
+          <div style="font-weight: 700">uvloop Async Engine</div>
+        </div>
+        <div class="card-p" style="margin-top: 8px">
+          <div>C-based libuv loop · zero-wait dispatch</div>
+          <div>modular plugins: antispam, ranks, federations</div>
+          <div>the only writer: enforces permissions before mutations</div>
+        </div>
+      </div>
+
+      <!-- L1 Process Cache -->
+      <div class="card card-white" style="left: 890px; top: 160px; width: 240px">
+        <div class="card-h">
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1d1c1a"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="4" y="4" width="16" height="16" rx="2" />
+            <rect x="9" y="9" width="6" height="6" />
+            <line x1="9" y1="1" x2="9" y2="4" />
+            <line x1="15" y1="1" x2="15" y2="4" />
+            <line x1="9" y1="20" x2="9" y2="23" />
+            <line x1="15" y1="20" x2="15" y2="23" />
+            <line x1="20" y1="9" x2="23" y2="9" />
+            <line x1="20" y1="14" x2="23" y2="14" />
+            <line x1="1" y1="9" x2="4" y2="9" />
+            <line x1="1" y1="14" x2="4" y2="14" />
+          </svg>
+          <div>L1 Process Cache</div>
+        </div>
+        <div class="card-p">OrderedDict LRU</div>
+        <div class="card-sub">instant permission &amp; filter checks</div>
+      </div>
+
+      <!-- Cache Invalidation Bus -->
+      <div class="card card-white" style="left: 890px; top: 285px; width: 240px">
+        <div class="card-h">
+          <svg class="icon" viewBox="0 0 24 24" fill="#DC382D">
+            <path
+              d="M21.5 8.7L13.8 4.3c-1.1-.6-2.5-.6-3.6 0L2.5 8.7C1.6 9.2 1 10.2 1 11.2v3.7c0 1.1.6 2 1.5 2.6l7.7 4.4c.5.3 1.1.5 1.8.5s1.2-.2 1.8-.5l7.7-4.4c.9-.5 1.5-1.5 1.5-2.6v-3.7c0-1-.6-2-1.5-2.5zM12 18.5l-6.2-3.5 1.9-1.1 4.3 2.4 4.3-2.4 1.9 1.1-6.2 3.5zm6.2-5.5L12 16.5 5.8 13l1.9-1.1 4.3 2.4 4.3-2.4 1.9 1.1zm0-2L12 14.5 5.8 11l6.2-3.5 6.2 3.5z"
+            />
+          </svg>
+          <div>Cache Invalidation Bus</div>
+        </div>
+        <div class="card-p">Redis Pub/Sub (cache_inv:*) · cluster eviction</div>
+        <div class="card-sub">keeps worker sharding consistent</div>
+      </div>
+
+      <!-- DATA AND INFRASTRUCTURE -->
+      <div class="container-box" style="left: 295px; top: 510px; width: 850px; height: 165px"></div>
+      <div class="container-label" style="left: 315px; top: 523px">DATA AND INFRASTRUCTURE</div>
+
+      <!-- MongoDB Primary Cluster -->
+      <div class="card card-tan" style="left: 315px; top: 548px; width: 255px">
+        <div class="card-h">
+          <svg class="icon" viewBox="0 0 24 24" fill="#47A248">
+            <path
+              d="M12 2.1c-.2 0-.4.1-.5.3-2.4 3.7-4.7 8.3-4.7 12.3 0 5 3.3 7.2 5.2 7.3h.1c1.9-.1 5.2-2.3 5.2-7.3 0-4-2.3-8.6-4.7-12.3-.2-.2-.4-.3-.6-.3zm0 2.2c1.7 3 3.6 7 3.6 10.4 0 3.3-2 5-3.6 5.3V4.3z"
+            />
+          </svg>
+          <div>MongoDB Primary Cluster</div>
+        </div>
+        <div class="card-p">Indexed replica set</div>
+        <div class="card-sub">compound indexes · IXSCAN lookups</div>
+      </div>
+
+      <!-- WriteBuffer (5s Batcher) -->
+      <div class="card card-tan" style="left: 592px; top: 548px; width: 255px">
+        <div class="card-h">
+          <svg class="icon" viewBox="0 0 24 24" fill="#3776AB">
+            <path
+              d="M11.91 2C6.88 2 7.21 4.18 7.21 4.18L7.22 6.45H12V7.18H5.16S2 6.82 2 11.89C2 16.96 4.76 16.71 4.76 16.71H6.4V14.4H11.23V19.46H16.84S20.08 19.46 20.08 14.4V11.89H15.25V11.17H22S22.37 6.82 17.3 6.82H15.65V9.13H10.82V4.18S10.82 2 11.91 2Z"
+            />
+          </svg>
+          <div>WriteBuffer (5s Batcher)</div>
+        </div>
+        <div class="card-p">In-memory dict + 5s atomic swap</div>
+        <div class="card-sub">bulk_write(ordered=False) cuts IOPS by 95%</div>
+      </div>
+
+      <!-- Redis Cluster -->
+      <div class="card card-tan" style="left: 870px; top: 548px; width: 255px">
+        <div class="card-h">
+          <svg class="icon" viewBox="0 0 24 24" fill="#DC382D">
+            <path
+              d="M21.5 8.7L13.8 4.3c-1.1-.6-2.5-.6-3.6 0L2.5 8.7C1.6 9.2 1 10.2 1 11.2v3.7c0 1.1.6 2 1.5 2.6l7.7 4.4c.5.3 1.1.5 1.8.5s1.2-.2 1.8-.5l7.7-4.4c.9-.5 1.5-1.5 1.5-2.6v-3.7c0-1-.6-2-1.5-2.5zM12 18.5l-6.2-3.5 1.9-1.1 4.3 2.4 4.3-2.4 1.9 1.1-6.2 3.5zm6.2-5.5L12 16.5 5.8 13l1.9-1.1 4.3 2.4 4.3-2.4 1.9 1.1zm0-2L12 14.5 5.8 11l6.2-3.5 6.2 3.5z"
+            />
+          </svg>
+          <div>Redis Cluster</div>
+        </div>
+        <div class="card-p">L2 shared cache</div>
+        <div class="card-sub">Pub/Sub channel &amp; distributed state</div>
+      </div>
+
+      <!-- SVG -->
+      <svg class="wires" viewBox="0 0 1200 705" aria-hidden="true">
+        <defs>
+          <marker
+            id="arr"
+            viewBox="0 0 10 10"
+            refX="7"
+            refY="5"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#6e6c64" />
+          </marker>
+        </defs>
+
+        <!-- Wire 1: Telegram MTProto to Event Ingress Router -->
+        <path
+          d="M 265 198 L 327 198"
+          fill="none"
+          stroke="#6e6c64"
+          stroke-width="1.2"
+          marker-end="url(#arr)"
+        />
+
+        <!-- Wire 2: Event Ingress Router down to uvloop Async Engine -->
+        <path
+          d="M 452 238 L 452 312"
+          fill="none"
+          stroke="#6e6c64"
+          stroke-width="1.2"
+          marker-end="url(#arr)"
+        />
+
+        <!-- Wire 3: uvloop Async Engine to Telegram MTProto (replies + actions) -->
+        <path
+          d="M 355 352 L 155 352 L 155 242"
+          fill="none"
+          stroke="#6e6c64"
+          stroke-width="1.2"
+          marker-end="url(#arr)"
+        />
+
+        <!-- Wire 4: uvloop Async Engine to Groq · Llama 3 (dashed: prompts) -->
+        <path
+          d="M 355 415 L 273 415"
+          fill="none"
+          stroke="#6e6c64"
+          stroke-width="1.2"
+          stroke-dasharray="4 4"
+          marker-end="url(#arr)"
+        />
+
+        <!-- Wire 5: Supergroup Admins down to L1 Process Cache -->
+        <path
+          d="M 1010 94 L 1010 152"
+          fill="none"
+          stroke="#6e6c64"
+          stroke-width="1.2"
+          marker-end="url(#arr)"
+        />
+
+        <!-- Wire 6: L1 Process Cache down to Cache Invalidation Bus -->
+        <path
+          d="M 1010 240 L 1010 277"
+          fill="none"
+          stroke="#6e6c64"
+          stroke-width="1.2"
+          marker-end="url(#arr)"
+        />
+
+        <!-- Wire 7: Cache Invalidation Bus to uvloop Async Engine -->
+        <path
+          d="M 890 350 L 688 350"
+          fill="none"
+          stroke="#6e6c64"
+          stroke-width="1.2"
+          marker-end="url(#arr)"
+        />
+
+        <!-- Wire 8: uvloop Async Engine down to MongoDB Primary Cluster (indexed reads) -->
+        <path
+          d="M 442 422 L 442 540"
+          fill="none"
+          stroke="#6e6c64"
+          stroke-width="1.2"
+          marker-end="url(#arr)"
+        />
+
+        <!-- Wire 9: uvloop Async Engine down to WriteBuffer (buffer writes) -->
+        <path
+          d="M 580 422 L 580 485 L 720 485 L 720 540"
+          fill="none"
+          stroke="#6e6c64"
+          stroke-width="1.2"
+          stroke-dasharray="4 4"
+          marker-end="url(#arr)"
+        />
+
+        <!-- Wire 10: Cache Invalidation Bus down to Redis Cluster (L2 sync) -->
+        <path
+          d="M 1010 365 L 1010 540"
+          fill="none"
+          stroke="#6e6c64"
+          stroke-width="1.2"
+          stroke-dasharray="4 4"
+          marker-end="url(#arr)"
+        />
+      </svg>
+
+      <!-- Wire Labels -->
+      <div class="wire-pill" style="left: 272px; top: 186px">raw updates</div>
+      <div class="wire-pill" style="left: 460px; top: 265px">parsed events</div>
+      <div class="wire-pill" style="left: 175px; top: 338px">dispatched actions</div>
+      <div class="wire-pill" style="left: 280px; top: 402px">AI prompts</div>
+      <div class="wire-pill" style="left: 1018px; top: 114px">admin config</div>
+      <div class="wire-pill" style="left: 1018px; top: 250px; font-size: 10px">cache miss</div>
+      <div class="wire-pill" style="left: 708px; top: 337px">evict stale keys (Pub/Sub)</div>
+      <div class="wire-pill" style="left: 450px; top: 470px">indexed reads (IXSCAN)</div>
+      <div class="wire-pill" style="left: 595px; top: 470px">buffer user writes</div>
+      <div class="wire-pill" style="left: 1018px; top: 440px">L2 sync &amp; invalidation</div>
+    </div>
+  </body>
+</html>
