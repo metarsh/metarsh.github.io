@@ -47,5 +47,5 @@ Open **[localhost:8080](http://localhost:8080)**. Before pushing, run `npm run f
 
 <div align="center">
   <sub>Made with care. Open for you to make your own.<br />
-  <a href="CONTRIBUTING.md">Small improvements welcome</a> &nbsp; · &nbsp; <a href="https://arshjaved.in">See it in action ↗</a></sub>
+  <a href="CONTRIBUTING.md">Small improvements welcome ↗</a></sub>
 </div>
