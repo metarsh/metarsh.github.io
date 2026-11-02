@@ -32,7 +32,6 @@
 
 **04** Push to **main**. Your live link appears in **Settings → Pages**.
 
-
 ## Run on your computer locally
 
 Use **Node.js 26+**
