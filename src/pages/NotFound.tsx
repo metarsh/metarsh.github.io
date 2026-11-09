@@ -21,7 +21,7 @@ const NotFound = () => {
           className="mx-auto mb-6 h-28 w-28 rounded-full object-cover shadow-2xl ring-1 ring-white/15 grayscale hover:grayscale-0 transition-all duration-500"
         />
         <h1 className="mb-2 text-5xl font-serif font-bold text-white tracking-tight">404</h1>
-        <p className="mb-6 text-zinc-400 font-sans text-sm">
+        <p className="mb-6 text-muted-foreground font-sans text-sm">
           The coordinates you followed don't exist in this sector.
         </p>
         <Link

@@ -200,7 +200,7 @@ export const Contact = () => {
                     autoComplete="name"
                     placeholder="Your name"
                     required
-                    className="mt-1 bg-black/40 border-white/10 focus-visible:border-white/30 h-10 rounded-xl text-sm text-zinc-100 placeholder:text-zinc-400"
+                    className="mt-1 bg-black/40 border-white/10 focus-visible:border-white/30 h-10 rounded-xl text-sm text-zinc-100 placeholder:text-muted-foreground"
                   />
                 </div>
                 <div>
@@ -215,7 +215,7 @@ export const Contact = () => {
                     spellCheck={false}
                     placeholder="you@email.com"
                     required
-                    className="mt-1 bg-black/40 border-white/10 focus-visible:border-white/30 h-10 rounded-xl text-sm text-zinc-100 placeholder:text-zinc-400"
+                    className="mt-1 bg-black/40 border-white/10 focus-visible:border-white/30 h-10 rounded-xl text-sm text-zinc-100 placeholder:text-muted-foreground"
                   />
                 </div>
                 <div>
@@ -227,7 +227,7 @@ export const Contact = () => {
                     name="project"
                     autoComplete="off"
                     placeholder="Your project"
-                    className="mt-1 bg-black/40 border-white/10 focus-visible:border-white/30 h-10 rounded-xl text-sm text-zinc-100 placeholder:text-zinc-400"
+                    className="mt-1 bg-black/40 border-white/10 focus-visible:border-white/30 h-10 rounded-xl text-sm text-zinc-100 placeholder:text-muted-foreground"
                   />
                 </div>
                 <div className="flex-1 flex flex-col min-h-0">
@@ -240,7 +240,7 @@ export const Contact = () => {
                     required
                     placeholder="Tell me about what you're working on, an idea, or just say hi..."
                     rows={3}
-                    className="mt-1 bg-black/40 border-white/10 focus-visible:border-white/30 resize-none rounded-xl text-sm text-zinc-100 placeholder:text-zinc-400 flex-1 min-h-[75px]"
+                    className="mt-1 bg-black/40 border-white/10 focus-visible:border-white/30 resize-none rounded-xl text-sm text-zinc-100 placeholder:text-muted-foreground flex-1 min-h-[75px]"
                   />
                 </div>
                 {error && (
@@ -269,13 +269,13 @@ export const Contact = () => {
         </div>
 
         <footer className="mt-12">
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-zinc-400 text-center">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground text-center">
             <span>📍 {portfolio.profile.location}</span>
             <span aria-hidden="true">•</span>
             <span>{portfolio.contact.footerNote}</span>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-x-2 text-xs text-zinc-400 mt-3">
+          <div className="flex flex-wrap items-center justify-center gap-x-2 text-xs text-muted-foreground mt-3">
             <span>
               © {currentYear} {portfolio.profile.name}
             </span>
@@ -294,7 +294,7 @@ export const Contact = () => {
                   e.preventDefault();
                   scrollToSection("#hero");
                 }}
-                className="flex items-center gap-1.5 justify-center text-zinc-400 hover:text-zinc-100 transition-colors"
+                className="flex items-center gap-1.5 justify-center text-muted-foreground hover:text-zinc-100 transition-colors"
               >
                 Back to top{" "}
                 <ArrowRight

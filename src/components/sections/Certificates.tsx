@@ -10,7 +10,7 @@ const credentials = portfolio.credentials;
 const sortedCredentials = [...credentials].sort((a, b) => b.issuedOn.localeCompare(a.issuedOn));
 
 const resultStyles: Record<string, string> = {
-  Winner: "bg-[#b07d2b] text-white font-semibold border-transparent",
+  Winner: "bg-[#b07d2b] text-zinc-950 font-semibold border-transparent",
 };
 
 const defaultResultStyle = "bg-white/[0.04] text-zinc-300 border-white/15";
@@ -125,7 +125,7 @@ export const Certificates = () => {
                 href={portfolio.credentialsLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
+                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-white transition-colors"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 Verify on LinkedIn
@@ -138,12 +138,12 @@ export const Certificates = () => {
                     setActiveFilter("All");
                     x.set(0);
                   }}
-                  className="inline-flex items-center gap-1.5 text-xs text-amber-300/90 hover:text-amber-200 transition-colors font-sans px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10"
+                  className="inline-flex items-center gap-1.5 text-xs text-amber-300 hover:text-amber-200 transition-colors font-sans px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10"
                 >
                   <span>
                     Showing {activeFilter} ({displayed.length})
                   </span>
-                  <span className="text-zinc-400 hover:text-white ml-1">✕ Reset</span>
+                  <span className="text-muted-foreground hover:text-white ml-1">✕ Reset</span>
                 </button>
               )}
             </div>
@@ -183,7 +183,7 @@ export const Certificates = () => {
                       />
                     )}
                   </div>
-                  <p className="text-[11px] sm:text-xs font-sans text-zinc-400 mt-1 leading-tight">
+                  <p className="text-xs font-sans text-muted-foreground mt-1 leading-snug">
                     {stat.label}
                   </p>
                 </button>
@@ -253,13 +253,13 @@ export const Certificates = () => {
                       {credential.title}
                     </h3>
 
-                    <p className="mt-auto pt-2 text-xs text-zinc-400 font-sans">
+                    <p className="mt-auto pt-2 text-xs text-muted-foreground font-sans">
                       <span className="break-words">{credential.issuer}</span>
-                      <span className="mx-1.5 text-zinc-600">·</span>
+                      <span className="mx-1.5 text-muted-foreground">·</span>
                       <span className="whitespace-nowrap">{credential.issuedLabel}</span>
                       {credential.expiresLabel && (
                         <>
-                          <span className="mx-1.5 text-zinc-600">·</span>
+                          <span className="mx-1.5 text-muted-foreground">·</span>
                           <span className="whitespace-nowrap">{credential.expiresLabel}</span>
                         </>
                       )}

@@ -11,7 +11,7 @@ const CAT = `   /\\_/\\
    > ^ <`;
 
 const LINK_CLASS =
-  "group inline-flex items-baseline gap-1.5 whitespace-nowrap text-zinc-300 transition-colors hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0b10]";
+  "group inline-flex max-w-full items-baseline gap-1.5 text-zinc-300 transition-colors hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0b10]";
 
 const NAME_CLASS =
   "underline decoration-white/20 decoration-dotted underline-offset-4 group-hover:decoration-white/50";
@@ -20,7 +20,7 @@ const ToolList = ({ tools }: { tools: StackTool[] }) => (
   <>
     {tools.map((tool, index) => (
       <span key={tool.name}>
-        {index > 0 ? <span className="text-zinc-600">, </span> : null}
+        {index > 0 ? <span className="text-muted-foreground">, </span> : null}
         <a
           href={tool.url}
           target="_blank"
@@ -29,7 +29,7 @@ const ToolList = ({ tools }: { tools: StackTool[] }) => (
           aria-label={`${tool.name} (opens in a new tab)`}
           className={LINK_CLASS}
         >
-          <TechLogo name={tool.name} className="h-3.5 w-3.5 self-center" colored={false} />
+          <TechLogo name={tool.name} className="h-3.5 w-3.5 shrink-0 self-center" colored={false} />
           <span className={NAME_CLASS}>{tool.name}</span>
         </a>
       </span>
@@ -64,15 +64,15 @@ export const Skills = () => {
             <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
             <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
             <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-            <span className="ml-2 truncate font-mono text-[11px] tracking-tight">
+            <span className="ml-2 truncate font-mono text-xs">
               <span className="text-zinc-300">{hostUser}</span>
-              <span className="text-zinc-500">{hostSuffix}</span>
+              <span className="text-muted-foreground">{hostSuffix}</span>
             </span>
           </div>
 
-          <div className="p-5 font-mono text-[12px] leading-relaxed sm:p-6">
+          <div className="p-5 font-mono text-xs leading-relaxed sm:p-6 sm:text-sm">
             <p className="break-words">
-              <span className="text-zinc-500">{promptLead}</span>
+              <span className="text-muted-foreground">{promptLead}</span>
               <span className="text-zinc-200">{promptCommand}</span>
               <span
                 className="ml-1 inline-block h-3.5 w-1.5 animate-pulse bg-zinc-400 align-middle"
@@ -88,8 +88,8 @@ export const Skills = () => {
               <div className="min-w-0">
                 <div className="grid gap-y-1">
                   {machine.rows.map((row) => (
-                    <div key={row.key} className="grid grid-cols-[76px_minmax(0,1fr)] gap-x-3">
-                      <span className="whitespace-nowrap text-zinc-500">{row.key}</span>
+                    <div key={row.key} className="grid grid-cols-[100px_minmax(0,1fr)] gap-x-3">
+                      <span className="whitespace-nowrap text-muted-foreground">{row.key}</span>
                       <span className="min-w-0 text-zinc-200">{row.value}</span>
                     </div>
                   ))}
@@ -97,8 +97,8 @@ export const Skills = () => {
                   <div className="h-2" aria-hidden="true" />
 
                   {stackLayers.map((layer) => (
-                    <div key={layer.id} className="grid grid-cols-[76px_minmax(0,1fr)] gap-x-3">
-                      <span className="whitespace-nowrap text-zinc-500" title={layer.headline}>
+                    <div key={layer.id} className="grid grid-cols-[100px_minmax(0,1fr)] gap-x-3">
+                      <span className="whitespace-nowrap text-muted-foreground" title={layer.headline}>
                         <span
                           className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle"
                           style={{ backgroundColor: layer.matte }}
@@ -111,8 +111,8 @@ export const Skills = () => {
                     </div>
                   ))}
 
-                  <div className="grid grid-cols-[76px_minmax(0,1fr)] gap-x-3">
-                    <span className="whitespace-nowrap text-zinc-500">langs</span>
+                  <div className="grid grid-cols-[100px_minmax(0,1fr)] gap-x-3">
+                    <span className="whitespace-nowrap text-muted-foreground">langs</span>
                     <span className="min-w-0 text-zinc-300">
                       <ToolList tools={languages} />
                     </span>

@@ -25,7 +25,7 @@ export const Experience = () => {
 
       <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 sm:gap-4">
         <h3 className="text-xl font-bold tracking-tight text-white font-sans">{experience.role}</h3>
-        <span className="font-mono text-xs text-zinc-400 shrink-0">{experience.timeframe}</span>
+        <span className="font-sans text-xs text-muted-foreground shrink-0">{experience.timeframe}</span>
       </div>
 
       <p className="mt-1 font-sans text-sm font-medium text-zinc-300">{experience.company}</p>
@@ -42,7 +42,7 @@ export const Experience = () => {
         {experience.stack.map((item) => (
           <span
             key={item}
-            className="inline-flex items-center gap-1.5 font-sans text-xs font-medium text-zinc-400 bg-white/[0.04] px-2.5 py-0.5 rounded-full hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 font-sans text-xs font-medium text-muted-foreground bg-white/[0.04] px-2.5 py-0.5 rounded-full hover:text-white transition-colors"
           >
             <TechLogo name={item} className="w-3.5 h-3.5 shrink-0" />
             <span>{item}</span>

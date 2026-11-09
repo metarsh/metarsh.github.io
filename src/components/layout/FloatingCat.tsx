@@ -88,7 +88,7 @@ export const FloatingCat = () => {
       if (isSleeping && !existingZzz) {
         const zzzEl = document.createElement("span");
         zzzEl.className =
-          "pet-zzz animate-pet-zzz font-mono text-[11px] font-bold text-indigo-300/80 drop-shadow-sm select-none pointer-events-none";
+          "pet-zzz animate-pet-zzz font-mono text-xs font-bold text-indigo-300 drop-shadow-sm select-none pointer-events-none";
         zzzEl.textContent = "Zzz";
         emoteContainer.appendChild(zzzEl);
       } else if (!isSleeping && existingZzz) {

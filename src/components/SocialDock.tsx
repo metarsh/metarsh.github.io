@@ -130,7 +130,7 @@ const DockIcon = ({ item, mouseX }: DockIconProps) => {
               animate={{ opacity: 1, y: -38, scale: 1 }}
               exit={{ opacity: 0, y: -30, scale: 0.85 }}
               transition={{ type: "spring", stiffness: 350, damping: 22 }}
-              className="absolute pointer-events-none px-2.5 py-1 rounded-md bg-zinc-900/95 border border-emerald-400/30 text-[11px] font-sans font-medium text-emerald-300 shadow-xl flex items-center gap-1 z-50 whitespace-nowrap backdrop-blur-md"
+              className="absolute pointer-events-none px-2.5 py-1 rounded-md bg-zinc-900/95 border border-emerald-400/30 text-xs font-sans font-medium text-emerald-300 shadow-xl flex items-center gap-1 z-50 whitespace-nowrap backdrop-blur-md"
             >
               <Check className="w-3 h-3 text-emerald-300 stroke-[2.5]" />
               <span>Copied!</span>

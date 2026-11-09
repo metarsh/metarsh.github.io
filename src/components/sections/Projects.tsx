@@ -150,7 +150,7 @@ const ProjectDialog = ({ project, onClose }: { project: Project; onClose: () => 
             type="button"
             onClick={onClose}
             aria-label="Close project modal"
-            className="absolute top-4 right-4 sm:top-5 sm:right-5 z-30 h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-zinc-400 hover:text-white backdrop-blur-md transition-colors"
+            className="absolute top-4 right-4 sm:top-5 sm:right-5 z-30 h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-muted-foreground hover:text-white backdrop-blur-md transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
@@ -208,7 +208,7 @@ const ProjectDialog = ({ project, onClose }: { project: Project; onClose: () => 
               </div>
 
               <div>
-                <div className="text-xs font-sans font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+                <div className="text-xs font-sans font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                   Tech Stack
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -267,7 +267,7 @@ const ProjectDialog = ({ project, onClose }: { project: Project; onClose: () => 
               )}
 
               <div className="space-y-2">
-                <h4 className="text-xs font-sans font-semibold uppercase tracking-wider text-zinc-400">
+                <h4 className="text-xs font-sans font-semibold uppercase tracking-wider text-muted-foreground">
                   Overview
                 </h4>
                 <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-sans">
@@ -277,7 +277,7 @@ const ProjectDialog = ({ project, onClose }: { project: Project; onClose: () => 
 
               {project.architecture && (
                 <div className="space-y-2">
-                  <h4 className="text-xs font-sans font-semibold uppercase tracking-wider text-zinc-400">
+                  <h4 className="text-xs font-sans font-semibold uppercase tracking-wider text-muted-foreground">
                     Architecture & System Design
                   </h4>
                   <p className="text-sm text-zinc-300 leading-relaxed font-sans">
@@ -288,7 +288,7 @@ const ProjectDialog = ({ project, onClose }: { project: Project; onClose: () => 
 
               {project.highlights && project.highlights.length > 0 && (
                 <div className="space-y-3">
-                  <h4 className="text-xs font-sans font-semibold uppercase tracking-wider text-zinc-400">
+                  <h4 className="text-xs font-sans font-semibold uppercase tracking-wider text-muted-foreground">
                     Key Deliverables
                   </h4>
                   <ul className="space-y-2.5">
@@ -297,7 +297,7 @@ const ProjectDialog = ({ project, onClose }: { project: Project; onClose: () => 
                         key={item}
                         className="flex items-start gap-2.5 text-sm text-zinc-300 leading-relaxed font-sans"
                       >
-                        <span aria-hidden="true" className="text-zinc-400 text-xs mt-1 shrink-0">
+                        <span aria-hidden="true" className="text-muted-foreground text-xs mt-1 shrink-0">
                           ▪
                         </span>
                         <span>{item}</span>
@@ -309,7 +309,7 @@ const ProjectDialog = ({ project, onClose }: { project: Project; onClose: () => 
 
               {project.roleAndDecisions && (
                 <div className="space-y-2 pb-4">
-                  <h4 className="text-xs font-sans font-semibold uppercase tracking-wider text-zinc-400">
+                  <h4 className="text-xs font-sans font-semibold uppercase tracking-wider text-muted-foreground">
                     Engineering Decisions
                   </h4>
                   <p className="text-sm text-zinc-300 leading-relaxed font-sans">

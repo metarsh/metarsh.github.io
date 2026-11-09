@@ -7,6 +7,8 @@
   --font-sans: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   --font-marker: "Rock Salt", cursive;
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.25rem;
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
   --color-card: hsl(var(--card));
@@ -40,7 +42,7 @@
     --primary-foreground: 240 5.9% 10%;
 
     --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted-foreground: 240 5% 72%;
 
     --accent: 240 3.7% 15.9%;
 

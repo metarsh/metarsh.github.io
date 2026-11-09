@@ -21,7 +21,7 @@ export const InsightsTeaser = () => {
           <Button
             asChild
             variant="ghost"
-            className="hidden sm:flex gap-2 text-zinc-400 hover:text-white hover:bg-transparent"
+            className="hidden sm:flex gap-2 text-muted-foreground hover:text-white hover:bg-transparent"
           >
             <Link to="/insights">
               View all posts <ArrowRight className="h-4 w-4" />

@@ -149,7 +149,7 @@ export const portfolio: PortfolioConfig = {
         label: "Hackathon Winner",
       },
       {
-        title: "Google GenAI (35K+)",
+        title: "Google GenAI",
         label: "Top 5 Finalist",
       },
       {
@@ -157,7 +157,7 @@ export const portfolio: PortfolioConfig = {
         label: "First-Author Papers",
       },
     ],
-    education: "Currently @ Graphic Era University · B.Tech CSE · GPA 8.16/10 · 2023—2027",
+    education: "cs @ graphic era ’27 · cgpa 8.16/10",
   },
   skills: {
     machine: {

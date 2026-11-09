@@ -104,7 +104,7 @@ export const Hero = () => {
               <p className="mt-4 max-w-[52ch] text-[clamp(1.1rem,2.2vw,1.45rem)] font-medium leading-relaxed text-zinc-200 max-md:mx-auto">
                 {portfolio.profile.tagline}
               </p>
-              <p className="mt-3 font-mono text-[13px] font-medium tracking-[0.06em] text-zinc-300 sm:text-sm">
+              <p className="mt-3 font-sans text-sm font-medium tracking-wide text-zinc-300">
                 {portfolio.profile.role}
               </p>
             </motion.div>
@@ -191,7 +191,7 @@ export const Hero = () => {
             {portfolio.sections.contact.enabled && (
               <Button
                 variant="ghost"
-                className="group h-auto rounded-none border-b border-white/15 px-0 py-2 text-base text-zinc-400 hover:bg-transparent hover:text-white"
+                className="group h-auto rounded-none border-b border-white/15 px-0 py-2 text-base text-muted-foreground hover:bg-transparent hover:text-white"
                 onClick={() => scrollToSection("#contact")}
               >
                 {portfolio.hero.contactLabel}
@@ -209,7 +209,7 @@ export const Hero = () => {
             {proofPoints.map(([value, label]) => (
               <div key={label} className="min-w-0 px-4 first:pl-0 last:pr-0">
                 <dt className="text-2xl font-bold text-white sm:text-3xl font-sans">{value}</dt>
-                <dd className="mt-1 font-sans text-xs text-zinc-400">{label}</dd>
+                <dd className="mt-1 font-sans text-xs text-muted-foreground">{label}</dd>
               </div>
             ))}
           </dl>

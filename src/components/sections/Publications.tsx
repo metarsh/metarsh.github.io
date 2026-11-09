@@ -129,7 +129,7 @@ const CompanionCard = () => {
           decoding="async"
         />
         <div className="absolute bottom-3 left-3 flex items-center">
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-zinc-950/85 backdrop-blur-md border border-white/15 text-xs text-amber-300 font-mono tracking-wide font-medium shadow-lg">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-zinc-950/85 backdrop-blur-md border border-white/15 text-xs text-amber-300 font-sans tracking-wide font-medium shadow-lg">
             {portfolio.research.badge}
           </span>
         </div>
@@ -193,7 +193,7 @@ export const Publications = () => {
                     >
                       <span>{l.label}</span>
                       <ArrowRight
-                        className="h-3 w-3 text-zinc-400 transition-transform group-hover:translate-x-0.5"
+                        className="h-3 w-3 text-muted-foreground transition-transform group-hover:translate-x-0.5"
                         aria-hidden="true"
                       />
                       <span className="sr-only">(opens in a new tab)</span>

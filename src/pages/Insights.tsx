@@ -17,7 +17,7 @@ const Insights = () => {
           <Button
             asChild
             variant="ghost"
-            className="pl-0 hover:pl-2 text-zinc-400 hover:text-white transition-all"
+            className="pl-0 hover:pl-2 text-muted-foreground hover:text-white transition-all"
           >
             <Link to="/" className="flex items-center gap-2 font-sans">
               <ArrowLeft className="h-4 w-4" /> Back to Portfolio
@@ -26,7 +26,7 @@ const Insights = () => {
         </div>
         <article className="font-sans">
           <header className="mb-12 border-b border-white/10 pb-10">
-            <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-zinc-400 mb-5">
+            <div className="flex flex-wrap items-center gap-3 text-xs font-sans text-muted-foreground mb-5">
               <span className="flex items-center gap-1.5">
                 <Calendar className="h-3.5 w-3.5" /> {insight.date}
               </span>
@@ -52,14 +52,14 @@ const Insights = () => {
                 />
                 <div>
                   <p className="text-sm font-semibold text-white">{profile.name}</p>
-                  <p className="text-xs text-zinc-400 font-mono">author & maintainer</p>
+                  <p className="text-xs text-muted-foreground font-sans">author & maintainer</p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {insight.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.03] text-xs font-mono text-zinc-300 border border-white/10"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.03] text-xs font-sans text-zinc-300 border border-white/10"
                   >
                     <TechLogo name={tag} className="w-3.5 h-3.5" /> {tag}
                   </span>

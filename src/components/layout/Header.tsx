@@ -147,7 +147,7 @@ export const Header = () => {
                     "relative px-3 py-1.5 text-xs font-medium tracking-wide transition-colors rounded-full font-sans",
                     isActive
                       ? "text-white"
-                      : "text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.04]",
+                      : "text-muted-foreground hover:text-zinc-100 hover:bg-white/[0.04]",
                   )}
                 >
                   {isActive && (
@@ -186,7 +186,7 @@ export const Header = () => {
               aria-expanded={mobileMenuOpen}
               aria-controls={mobileMenuId}
               aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-              className="md:hidden relative z-50 p-1.5 text-zinc-400 hover:text-white transition-colors"
+              className="md:hidden relative z-50 p-1.5 text-muted-foreground hover:text-white transition-colors"
             >
               <span className="sr-only">Menu</span>
               <div className="space-y-1.5 w-5">
@@ -248,7 +248,7 @@ export const Header = () => {
                       "text-2xl font-light tracking-widest transition-colors py-2.5 border-b border-white/5 w-full text-center rounded-xl",
                       isActive
                         ? "text-white font-medium bg-white/[0.06] border-white/15 shadow-xs"
-                        : "text-zinc-400 hover:text-white",
+                        : "text-muted-foreground hover:text-white",
                     )}
                   >
                     {item.label}
@@ -261,7 +261,7 @@ export const Header = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="mt-auto mb-12 flex flex-col items-center gap-4 text-zinc-400 text-sm"
+              className="mt-auto mb-12 flex flex-col items-center gap-4 text-muted-foreground text-sm"
             >
               <p>{portfolio.profile.availability}</p>
             </motion.div>

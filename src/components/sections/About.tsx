@@ -2,6 +2,7 @@ import { portfolio } from "@/config/portfolio";
 import { motion } from "framer-motion";
 
 const { stats } = portfolio.about;
+const [educationSummary, ...educationDetails] = portfolio.about.education.split(" · ");
 
 export const About = () => {
   return (
@@ -26,7 +27,7 @@ export const About = () => {
                 <span className="text-sm font-semibold text-white tracking-tight">
                   {stat.title}
                 </span>
-                <span className="text-xs text-zinc-400 font-medium">{stat.label}</span>
+                <span className="text-xs text-muted-foreground font-medium">{stat.label}</span>
               </div>
             ))}
           </div>
@@ -39,8 +40,17 @@ export const About = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <p className="font-mono text-[11px] tracking-tight text-zinc-500">
-            {portfolio.about.education}
+          <p className="flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1 font-sans text-sm font-medium leading-relaxed tracking-tight text-zinc-300">
+            <span>{educationSummary}</span>
+            {educationDetails.map((detail) => (
+              <span
+                key={detail}
+                className="inline-flex items-baseline gap-3 whitespace-nowrap"
+              >
+                <span aria-hidden="true">·</span>
+                {detail}
+              </span>
+            ))}
           </p>
         </motion.div>
       </div>
