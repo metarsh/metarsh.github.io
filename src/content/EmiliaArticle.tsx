@@ -1,433 +1,174 @@
-import { CodeBlock } from "@/components/CodeBlock";
+import type { ReactNode } from "react";
 import { EmiliaArchitectureDiagram } from "./EmiliaArchitectureDiagram";
 
+const Source = ({ path, children }: { path: string; children: ReactNode }) => (
+  <a
+    href={`https://github.com/metarsh/Emilia/blob/main/Emilia/${path}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-zinc-100 underline decoration-white/25 underline-offset-4 hover:decoration-white/70"
+  >
+    {children}
+  </a>
+);
+
+const headingClass = "text-xl sm:text-2xl text-white font-medium pt-8 leading-snug tracking-tight";
+
 export const EmiliaArticle = () => (
-  <>
-    <p className="text-xl sm:text-2xl text-white font-medium leading-snug tracking-tight">
-      Traffic scaling and failure modes
+  <div className="space-y-6 [&_p_code]:rounded [&_p_code]:bg-white/[0.05] [&_p_code]:px-1.5 [&_p_code]:py-0.5 [&_p_code]:font-mono [&_p_code]:text-sm [&_p_code]:text-zinc-200">
+    <p>
+      Telegram gives one group chat a limit of having upto 200,000 members. Well but who will manage
+      them? That's why i made Emilia, a group management bot. Over time, i found several problems
+      based on user's feedbacks and implemented them accordingly in Emilia, hence converting it to a
+      multi purpose bot. You want spam management, admin utilities? Emilia got it. You got multiple
+      groups and having trouble managing them all? Emilia got it. You want anime features? Emilia
+      got it. You want music in your voice chats? Emilia got it. You want a personal bot of your own
+      but have no technical expertise or servers? Clone feature is here, so yeah! Emilia got it.
+      Everything i did, i did for the users without any profit. So i hope you are here to know more
+      about emilia. Let's get into it!
     </p>
 
     <p>
-      I built Emilia in 2021 as a modular Telegram bot for group administration, federated bans,
-      anime lookups, and moderation filters. When it was running in a handful of small groups, a
-      basic Pyrogram script on standard asyncio with direct MongoDB queries worked fine.
+      Let's come to technical part, i am assuming you are a developer and wants to find out the idea
+      behind creating a scalable bot. I organize Emilia around feature modules, with shared services
+      for command handling and storage. The repository includes group administration, anime
+      integrations, music, chatbot with voice, music system and clone hosting.
+    </p>
+
+    <h2 className={headingClass}>A ban that follows the spammer</h2>
+
+    <p>
+      Suppose you run an anime community with a discussion group and a separate recommendations
+      group. You ban a spammer in one, and they join the other. Every administrator has to recognize
+      the same account and repeat the ban. I added federations so administrators can link their
+      groups to a shared ban list. One federation ban asks Emilia to remove that account from all
+      participating groups.
     </p>
 
     <p>
-      Once public supergroups with 20,000 to 50,000 members added the bot, traffic changed
-      completely. Within months, Emilia was in 5,000 groups with over 900,000 users. During peak
-      hours, incoming message rates pushed past 10,000 updates a minute. The original architecture
-      collapsed under that volume: MongoDB CPU hit 100%, connection pools dried up, query latency
-      jumped from 8ms to over 2 seconds, and Telegram throttled the bot token with FloodWait errors
-      for failing to acknowledge updates in time.
+      Saving the ban is a database write; enforcing it takes a separate Telegram request for each
+      group. The bot might have lost permission to ban people in one group, or Telegram might tell
+      it to wait before making more requests. My{" "}
+      <Source path="modules/federations.py">ban handler</Source> paces the calls and retries when
+      Telegram asks it to wait. Failed removals are logged as it continues through the groups.
+    </p>
+
+    <h2 className={headingClass}>Finding the show in a screenshot</h2>
+
+    <p>
+      An anime screenshot often arrives without a title. A member can reply to that image with
+      Emilia's scene lookup command. I use trace.moe to find a matching scene, and Emilia returns
+      the show's title with an episode number and a short preview. Once they know the show, they can
+      look it up through AniList, an anime catalog and watch-list service, and add it to their
+      linked watch list through buttons on Emilia's messages.
     </p>
 
     <p>
-      Active groups do not generate sequential traffic. During busy hours, dozens of members chat at
-      once, bots spam links, and new accounts join in waves. Every message produces an MTProto
-      update that the bot receives immediately.
+      A button that updates a watch list changes somebody's external account. I keep the account
+      identity and intended action attached to the{" "}
+      <Source path="modules/anime/anilist.py">result's buttons</Source>. For a group-linked account,
+      Emilia checks that the person recorded in the link is still the group's Telegram owner before
+      using it.
+    </p>
+
+    <h2 className={headingClass}>Playing a song while messages keep arriving</h2>
+
+    <p>
+      Telegram groups can have a live audio call alongside their text chat. Someone requests a song,
+      and Emilia finds the media and prepares it for a separate assistant account to play in the
+      call. Meanwhile, messages keep arriving, including messages the bot needs to moderate.
     </p>
 
     <p>
-      Originally, my message handler updated telemetry synchronously: on every incoming message, it
-      updated the user's username, recorded their current chat, and touched their last-active
-      timestamp. With 50 groups receiving 10 messages a second, that produced 500 individual MongoDB
-      update queries per second.
+      YouTube extraction includes blocking work. Running it directly in the event loop, which
+      handles incoming messages, would hold up other requests. I send it to{" "}
+      <Source path="modules/music/core/youtube.py">worker threads</Source> so the loop can keep
+      handling messages. Download work has its own thread pool, with timeouts and file-size limits
+      to bound how long a request waits and how much media it can download.
     </p>
 
     <p>
-      The MongoDB connection pool was capped at{" "}
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        maxPoolSize=100
-      </code>
-      . Under burst traffic, all 100 sockets were occupied waiting on disk writes. Query latency
-      jumped from 8ms to 2,400ms. Because asyncio worker coroutines were blocked awaiting database
-      responses, incoming network packets piled up in the TCP buffer until Telegram flagged the bot
-      as unresponsive.
+      The queue has a different problem. With songs A, B and C waiting, removing the second song
+      means B. If playback takes A off the queue before the removal finishes, position two now
+      points to C. I give each queue entry an ID and resolve the requested position to that ID. A{" "}
+      <Source path="services/music_queue.py">Redis script</Source> removes the matching entry in one
+      atomic operation. A change in position cannot redirect that removal to another song.
     </p>
 
-    {/* Architecture Diagram */}
+    <h2 className={headingClass}>Hosting someone else's bot</h2>
+
+    <p>
+      The clone feature lets a member use Emilia's group administration through a bot with its own
+      identity. They create that identity through BotFather, Telegram's bot-creation account, then
+      send Emilia its token in private using <code>/clone</code>. I run the client for them, so they
+      can add their bot to a group without installing Python or renting a server. Each clone has its
+      own Telegram session and uses Emilia's shared application.
+    </p>
+
+    <p>
+      Starting another client opens another connection. My{" "}
+      <Source path="services/clone_runtime.py">clone manager</Source> limits concurrent starts and
+      cleans up clients when startup fails. Registration checks the bot's identity and its recorded
+      owner before starting it. Music and chatbot replies run on the main bot.
+    </p>
+
+    <p>
+      If more than one Emilia process is running, they need to agree on which one hosts a clone. I
+      use a <Source path="services/clones.py">database lease</Source>: a record naming the
+      responsible process, with an expiry time. That process renews the lease while it hosts the
+      client. If it loses the lease or cannot renew it, it attempts to stop the client. An expired
+      lease lets another process claim responsibility without depending on the old process to
+      release it.
+    </p>
+
+    <h2 className={headingClass}>Remembering a conversation, then forgetting it</h2>
+
+    <p>
+      A member can continue a conversation by replying to Emilia's message. The chatbot uses Groq
+      for model responses and keeps recent messages in a bounded session. A separate background
+      request extracts user facts and preferences into MongoDB, so a later session can start with
+      saved context. It can also turn a response into a Telegram voice note through Cartesia, a
+      speech-generation service.
+    </p>
+
+    <p>
+      Now suppose the member sends <code>/reset</code> while a memory update is still running.
+      Deleting the database record alone would let that task finish and save the old facts again. In
+      the <Source path="modules/chatbot.py">reset handler</Source>, I clear the current session,
+      then cancel and await its pending memory tasks before deleting the saved record. Memory
+      updates also check that they still belong to the current session before writing.
+    </p>
+
+    <h2 className={headingClass}>The database work behind a busy chat</h2>
+
+    <p>
+      Incoming messages also update user and group tracking records. A busy conversation can update
+      the same records repeatedly, so I merge those changes in a bounded{" "}
+      <Source path="utils/write_buffer.py">write buffer</Source> and normally save batches every
+      five seconds. Each entry has a revision number. After a write succeeds, I remove the entry
+      only if its revision is still the one saved. A newer update stays queued.
+    </p>
+
+    <p>
+      Failed database writes stay queued too. During shutdown, Emilia tries to drain the buffer and
+      saves any remaining backlog to a recovery file for the next startup. This leaves a tradeoff:
+      tracking updates held only in memory can be lost if the process is killed before it saves
+      them.
+    </p>
+
     <EmiliaArchitectureDiagram />
 
-    <p className="text-lg sm:text-xl text-white font-medium pt-6 leading-snug">
-      Replacing the default asyncio event loop with uvloop
+    <p>
+      I built Emilia for people who wanted help running their groups. As it grows, I want each new
+      feature to work alongside the commands they already depend on. That means paying attention to
+      requests that overlap and services that fail, because those details decide whether the bot is
+      useful in a busy conversation.
     </p>
 
     <p>
-      Before changing database queries, I replaced CPython's default asyncio event loop. Standard
-      asyncio is written in Python and incurs measurable dispatch overhead when juggling thousands
-      of rapid network frames. Under heavy load, coroutine switching alone was taking up roughly a
-      third of the container CPU.
+      Try a feature you'd want in your own bot, then follow its handler in Emilia's source. Use that
+      workflow as a starting point for your own implementation. If there is something your community
+      needs that Emilia could help with, I'd like to hear about it in the repository.
     </p>
-
-    <p>
-      I installed{" "}
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        uvloop
-      </code>{" "}
-      at the process entry point before initializing any database drivers or clients. Because uvloop
-      is written in C around libuv, coroutine scheduling overhead dropped significantly, doubling
-      packet ingestion capacity. However, a faster loop just delivered packets to a congested
-      database faster.
-    </p>
-
-    <p className="text-lg sm:text-xl text-white font-medium pt-6 leading-snug">
-      Batching user writes with an in-memory buffer
-    </p>
-
-    <p>
-      The primary cause of database saturation was telemetry. Every incoming message needed to
-      record the user's username, their current chat, and their last active timestamp. Writing this
-      directly to MongoDB on every packet is wasteful when the same active users send multiple
-      messages within a few seconds.
-    </p>
-
-    <p>
-      To solve this, I wrote an in-memory buffer in{" "}
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        Emilia/utils/write_buffer.py
-      </code>
-      . When a message arrives, the handler adds the user's details to an in-memory dictionary
-      protected by an{" "}
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        asyncio.Lock
-      </code>
-      . If a user posts multiple times across different chats within a five-second window, all
-      changes merge into a single dictionary entry in RAM.
-    </p>
-
-    <p>
-      Every five seconds, a background task acquires the lock, swaps the active dictionary with an
-      empty one, and releases the lock immediately. The swap takes microseconds, so incoming message
-      handlers never block waiting on disk I/O. The task then compiles the detached dictionary into
-      a list of UpdateOne operations and sends them in a single bulk_write call with{" "}
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        ordered=False
-      </code>
-      .
-    </p>
-
-    <p>
-      Using{" "}
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        ordered=False
-      </code>{" "}
-      lets MongoDB execute the batch operations concurrently across storage threads rather than
-      executing them sequentially. Combined with{" "}
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        $setOnInsert
-      </code>{" "}
-      for initial records and{" "}
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        $addToSet
-      </code>{" "}
-      for chat associations, this reduced write queries from several thousand per minute to 12 bulk
-      operations, cutting write IOPS by roughly 95%.
-    </p>
-
-    <CodeBlock
-      filename="Emilia/utils/write_buffer.py (In-Memory Flusher)"
-      language="python"
-      code={`import asyncio, datetime
-from pymongo import UpdateOne
-from Emilia import LOGGER, db
-
-class WriteBuffer:
-    def __init__(self, flush_interval=5):
-        self.flush_interval = flush_interval
-        self.users_buffer = {}
-        self.chats_buffer = {}
-        self.lock = asyncio.Lock()
-        self.running = False
-
-    async def add_user(self, user_id, username=None, chat_id=None, chat_title=None, bot_id=None):
-        async with self.lock:
-            if user_id not in self.users_buffer:
-                self.users_buffer[user_id] = {
-                    "username": username,
-                    "chats": {},
-                    "bot_ids": set(),
-                }
-            entry = self.users_buffer[user_id]
-            if username:
-                entry["username"] = username
-            if chat_id is not None:
-                entry["chats"][chat_id] = {"chat_id": chat_id, "chat_title": chat_title}
-            if bot_id:
-                entry["bot_ids"].add(bot_id)
-
-    async def _flush(self):
-        async with self.lock:
-            if not self.users_buffer and not self.chats_buffer:
-                return
-            # Atomic swap in memory: zero handler wait time
-            users_to_write = self.users_buffer
-            chats_to_write = self.chats_buffer
-            self.users_buffer = {}
-            self.chats_buffer = {}
-
-        if users_to_write:
-            requests = []
-            now = datetime.datetime.now(datetime.timezone.utc)
-            for user_id, data in users_to_write.items():
-                update_doc = {"$setOnInsert": {"first_found_date": now}}
-                if data["username"]:
-                    update_doc["$set"] = {"username": data["username"]}
-                if data["chats"]:
-                    update_doc["$addToSet"] = {"chats": {"$each": list(data["chats"].values())}}
-                if data["bot_ids"]:
-                    update_doc.setdefault("$addToSet", {})["bot_ids"] = {"$each": list(data["bot_ids"])}
-
-                requests.append(UpdateOne({"user_id": user_id}, update_doc, upsert=True))
-
-            if requests:
-                try:
-                    await db.users.bulk_write(requests, ordered=False)
-                    LOGGER.info(f"Flushed {len(requests)} aggregated users to MongoDB.")
-                except Exception as e:
-                    LOGGER.error(f"WriteBuffer flush error: {e}")`}
-    />
-
-    <p className="text-lg sm:text-xl text-white font-medium pt-6 leading-snug">
-      Limiting connection pool size and adding compound indexes
-    </p>
-
-    <p>
-      Increasing{" "}
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        maxPoolSize
-      </code>{" "}
-      to 500 or 1,000 does not fix connection timeouts in MongoDB. WiredTiger uses a ticket-based
-      concurrency system with 128 read and 128 write tickets. Opening hundreds of concurrent
-      connections causes threads to queue for tickets, increasing lock contention and CPU context
-      switching.
-    </p>
-
-    <p>
-      I kept{" "}
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        maxPoolSize
-      </code>{" "}
-      capped at 100 and set{" "}
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        minPoolSize=20
-      </code>{" "}
-      so connections were pre-warmed for traffic spikes. I also set{" "}
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        waitQueueTimeoutMS=2500
-      </code>
-      . If the pool saturates, queries fail quickly instead of queueing indefinitely and exhausting
-      process memory.
-    </p>
-
-    <p>
-      I also audited queries for unindexed collection scans (COLLSCAN). At 900,000 users, an
-      unindexed lookup reads gigabytes of data into RAM. I added compound B-tree indexes for the
-      most common query patterns:{" "}
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        ("chat_id", 1), ("user_id", 1)
-      </code>{" "}
-      for chat member lookups and{" "}
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        ("chat_id", 1), ("disabled_commands", 1)
-      </code>{" "}
-      for command filters. When combined with projections that request only needed fields, MongoDB
-      satisfies queries directly from the B-tree index in RAM (
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        IXSCAN
-      </code>
-      ) without fetching full documents from disk.
-    </p>
-
-    <CodeBlock
-      filename="Emilia/database/mongo.py (Driver Pool & Compound Indexing)"
-      language="python"
-      code={`import motor.motor_asyncio
-from pymongo import IndexModel, ASCENDING
-from Emilia import LOGGER, MONGO_URI, DB_NAME
-
-# Driver Connection Pool Tuning for High-Concurrency Async Workers
-client = motor.motor_asyncio.AsyncIOMotorClient(
-    MONGO_URI,
-    minPoolSize=20,                # Pre-warmed sockets eliminate handshake spikes during traffic surges
-    maxPoolSize=100,               # Strict concurrency barrier preventing WiredTiger ticket exhaustion
-    maxIdleTimeMS=45000,           # Recycle idle sockets before cloud firewalls drop them
-    waitQueueTimeoutMS=2500,       # Fail-fast timeout when pool is saturated to prevent coroutine pileup
-    serverSelectionTimeoutMS=5000, # Rapid failover detection for replica set primary elections
-    retryWrites=True,              # Transparent retry on transient network hiccups
-)
-
-db = client[DB_NAME]
-
-async def init_indexes():
-    """Build compound indexes with covering projections to eliminate COLLSCAN penalties."""
-    LOGGER.info("Verifying compound indexes across core collections...")
-
-    # Compound index for chat member lookups: ensures IXSCAN covering queries
-    user_chat_index = IndexModel(
-        [("chat_id", ASCENDING), ("user_id", ASCENDING)],
-        name="chat_member_lookup_idx",
-        background=True,
-    )
-
-    # Compound index for fast permission & command status checks
-    chat_command_index = IndexModel(
-        [("chat_id", ASCENDING), ("disabled_commands", ASCENDING)],
-        name="command_filter_idx",
-        background=True,
-    )
-
-    await db.chat_members.create_indexes([user_chat_index])
-    await db.chat_settings.create_indexes([chat_command_index])
-    LOGGER.info("Compound indexes built successfully.")`}
-    />
-
-    <p className="text-lg sm:text-xl text-white font-medium pt-6 leading-snug">
-      Two-tier caching with Redis Pub/Sub invalidation
-    </p>
-
-    <p>
-      Reducing write traffic addressed half the bottleneck. The other half was read traffic. For
-      every message, the bot checks chat settings: admin status, disabled commands, antiflood
-      limits, and keyword filters.
-    </p>
-
-    <p>
-      Querying MongoDB on every message is too slow. Putting Redis in front helped, but querying
-      Redis over loopback TCP still takes 0.3ms to 1.5ms per command due to socket I/O,
-      serialization, and event loop scheduling. When a bot evaluates five to ten settings across
-      hundreds of messages per second, those small fractions add up.
-    </p>
-
-    <p>
-      I implemented a two-tier cache in{" "}
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        Emilia/utils/cache.py
-      </code>
-      :
-    </p>
-
-    <ul className="list-disc list-inside space-y-2 text-zinc-300">
-      <li>
-        L1: An in-process{" "}
-        <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-          OrderedDict
-        </code>{" "}
-        LRU capped at 10,000 items. Lookups take less than 0.05 microseconds with zero network calls
-        and no serialization.
-      </li>
-      <li>
-        L2: Redis, serialized with{" "}
-        <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-          orjson
-        </code>
-        . When L1 misses, the bot reads from Redis, stores the result in L1, and returns it.
-      </li>
-    </ul>
-
-    <p>
-      When scaling across multiple worker processes, local L1 caches can desynchronize. If an admin
-      runs{" "}
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        /anidisable
-      </code>{" "}
-      on Worker 1, Worker 1 updates Redis and evicts its local L1 entry, but Worker 2 still holds
-      the old setting in its local RAM.
-    </p>
-
-    <p>
-      To keep workers in sync without distributed locks, I set up a Redis Pub/Sub invalidation
-      channel (
-      <code className="text-zinc-200 font-mono text-sm bg-white/[0.05] px-1.5 py-0.5 rounded">
-        cache_inv:settings
-      </code>
-      ). Each worker process generates a random instance ID at startup. When any worker updates or
-      deletes a key, it writes to Redis and publishes a message with its instance ID and the
-      modified key. Other workers listening on the channel check the instance ID, and if it does not
-      match their own, they evict the key from their local L1 cache.
-    </p>
-
-    <CodeBlock
-      filename="Emilia/utils/cache.py (L1 LRU + Redis Pub/Sub Invalidation)"
-      language="python"
-      code={`import asyncio, time, uuid, orjson
-from collections import OrderedDict
-import redis.asyncio as redis
-
-class MultiLevelCache:
-    def __init__(self, redis_url, namespace="cache", max_l1_entries=10_000, default_ttl=300):
-        self._l1_cache = OrderedDict()
-        self._max_l1 = max_l1_entries
-        self._default_ttl = default_ttl
-        self._redis_url = redis_url
-        self._namespace = namespace
-        self._instance_id = uuid.uuid4().hex
-        self._channel_name = f"cache_inv:{namespace}"
-        self._redis = None
-        self._pubsub_redis = None
-
-    async def start(self):
-        self._redis = redis.from_url(self._redis_url)
-        self._pubsub_redis = redis.from_url(self._redis_url, socket_timeout=None)
-        self._listener_task = asyncio.create_task(self._listen_for_invalidation())
-
-    async def get(self, key: str):
-        # 1. Check L1 In-Memory LRU (<0.05ms)
-        entry = self._l1_cache.get(key)
-        if entry is not None:
-            if time.time() <= entry["expires"]:
-                self._l1_cache.move_to_end(key)
-                return entry["value"]
-            del self._l1_cache[key]
-
-        # 2. Check L2 Redis
-        if self._redis:
-            raw = await self._redis.get(f"{self._namespace}:{key}")
-            if raw:
-                val = orjson.loads(raw)
-                self._l1_cache[key] = {"value": val, "expires": time.time() + self._default_ttl}
-                return val
-        return None
-
-    async def set(self, key: str, value, ttl=None):
-        ttl = ttl or self._default_ttl
-        self._l1_cache[key] = {"value": value, "expires": time.time() + ttl}
-        if self._redis:
-            # Write to Redis and broadcast cross-shard cache invalidation
-            await self._redis.set(f"{self._namespace}:{key}", orjson.dumps(value), ex=ttl)
-            await self._redis.publish(self._channel_name, orjson.dumps({"i": self._instance_id, "k": key}))
-
-    async def _listen_for_invalidation(self):
-        pubsub = self._pubsub_redis.pubsub()
-        await pubsub.subscribe(self._channel_name)
-        async for msg in pubsub.listen():
-            if msg and msg["type"] == "message":
-                data = orjson.loads(msg["data"])
-                # If another worker changed this key, evict from local L1 memory
-                if data["i"] != self._instance_id:
-                    self._l1_cache.pop(data["k"], None)`}
-    />
-
-    <p className="text-lg sm:text-xl text-white font-medium pt-6 leading-snug">Key takeaways</p>
-
-    <ul className="list-disc list-inside space-y-2 text-zinc-300">
-      <li>
-        Buffer telemetry writes in RAM: An in-memory dictionary with a 5-second atomic swap cut
-        MongoDB write queries by 95%.
-      </li>
-      <li>
-        Limit connection pools: Keeping maxPoolSize at 100 and indexing compound query keys
-        prevented thread contention and WiredTiger ticket starvation.
-      </li>
-      <li>
-        Invalidate local caches over Pub/Sub: An in-process OrderedDict LRU eliminated network
-        round-trips for permissions, while Redis Pub/Sub kept multiple worker processes in sync.
-      </li>
-    </ul>
-
-    <p>
-      The full source code for Emilia, including the WriteBuffer and MultiLevelCache
-      implementations, is on GitHub.
-    </p>
-  </>
+  </div>
 );

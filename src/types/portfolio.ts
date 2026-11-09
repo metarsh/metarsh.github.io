@@ -135,9 +135,7 @@ export type PortfolioConfig = {
     introduction: string;
     date: string;
     readingTime: string;
-    category: string;
     tags: string[];
-    metrics: { label: string; value: string; note: string }[];
     links: { label: string; href: string }[];
   };
 };

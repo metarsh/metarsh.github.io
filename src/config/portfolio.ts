@@ -823,44 +823,21 @@ export const portfolio: PortfolioConfig = {
     label: "Companion cat (click to pet)",
   },
   insight: {
-    title: "Scaling Emilia to 900,000 Telegram Users Without Database Lockups",
+    title: "Building Emilia for Telegram communities",
     summary:
-      "How I handled connection pool exhaustion, unbatched writes, and cross-worker cache sync in an open-source Telegram bot serving 900,000 users.",
+      "The engineering behind sharing a ban across groups, keeping music requests responsive, and hosting someone else's bot.",
     introduction:
-      "What fails when a Telegram bot handles 5,000 active groups simultaneously: connection pool exhaustion, WiredTiger write ticket starvation, unbatched telemetry, and stale in-memory caches.",
+      "I built Emilia around requests from the people using it. Features like shared bans and hosted bots each brought their own problems with permissions and concurrent work.",
     date: "Jan 2026",
-    readingTime: "14 min read",
-    category: "Production Systems",
-    tags: ["Python", "MongoDB", "Redis", "Docker"],
-    metrics: [
-      {
-        label: "Total Users",
-        value: "900K+",
-        note: "across 5,000+ groups",
-      },
-      {
-        label: "Write IOPS Cut",
-        value: "-95%",
-        note: "via in-memory buffer",
-      },
-      {
-        label: "L1 Cache Hit",
-        value: "<0.05ms",
-        note: "process-local OrderedDict",
-      },
-      {
-        label: "Loop Core",
-        value: "uvloop",
-        note: "32 async workers",
-      },
-    ],
+    readingTime: "7 min read",
+    tags: ["Python", "Telegram", "MongoDB", "Redis", "Docker"],
     links: [
       {
-        label: "GitHub Repo ↗",
+        label: "Emilia source",
         href: "https://github.com/metarsh/Emilia",
       },
       {
-        label: "Live Bot @Elf_Robot ↗",
+        label: "Open @Elf_Robot",
         href: "https://t.me/Elf_Robot",
       },
     ],

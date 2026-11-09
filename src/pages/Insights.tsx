@@ -34,8 +34,6 @@ const Insights = () => {
               <span className="flex items-center gap-1.5">
                 <Clock className="h-3.5 w-3.5" /> {insight.readingTime}
               </span>
-              <span>·</span>
-              <span>{insight.category}</span>
             </div>
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display leading-[1.12] tracking-tight text-white font-normal mb-6">
               {insight.title}
@@ -54,9 +52,7 @@ const Insights = () => {
                 />
                 <div>
                   <p className="text-sm font-semibold text-white">{profile.name}</p>
-                  <p className="text-xs text-zinc-400 font-mono">
-                    author & maintainer · @{profile.username}
-                  </p>
+                  <p className="text-xs text-zinc-400 font-mono">author & maintainer</p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -71,18 +67,6 @@ const Insights = () => {
               </div>
             </div>
           </header>
-          <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-10">
-            {insight.metrics.map((metric) => (
-              <div
-                key={metric.label}
-                className="rounded-xl border border-white/10 bg-[#0a0a0f] p-4"
-              >
-                <dt className="text-xs font-mono text-zinc-400 uppercase">{metric.label}</dt>
-                <dd className="mt-1 text-2xl sm:text-3xl font-bold text-white">{metric.value}</dd>
-                <p className="mt-1 text-[11px] text-zinc-400">{metric.note}</p>
-              </div>
-            ))}
-          </dl>
           <div className="space-y-6 text-base sm:text-lg leading-relaxed text-zinc-300">
             <EmiliaArticle />
             <div className="mt-14 rounded-2xl border border-white/10 bg-[#09090e] p-6 sm:p-8 flex flex-wrap gap-3">
