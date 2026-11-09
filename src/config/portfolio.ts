@@ -32,7 +32,7 @@ export const portfolio: PortfolioConfig = {
       "Generative AI",
     ],
     favicon: "/favicon.ico",
-    socialImage: "",
+    socialImage: "/images/og.png",
     googleSiteVerification: "",
   },
   profile: {
