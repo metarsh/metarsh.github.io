@@ -1,5 +1,6 @@
 import { scrollToSection } from "@/lib/scroll";
 import { ArrowRight, Loader2, CheckCircle } from "lucide-react";
+import { SiGithub } from "react-icons/si";
 import { portfolio, templateFormEndpoint, templateRecaptchaSiteKey } from "@/config/portfolio";
 import { assetUrl } from "@/lib/assets";
 import { recaptchaToken } from "@/lib/recaptcha";
@@ -275,10 +276,22 @@ export const Contact = () => {
             <span>{portfolio.contact.footerNote}</span>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-x-2 text-xs text-muted-foreground mt-3">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground mt-3">
             <span>
               © {currentYear} {portfolio.profile.name}
             </span>
+            {portfolio.site.sourceLink && (
+              <a
+                href={portfolio.site.sourceLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Portfolio source on GitHub (opens in a new tab)"
+                className="inline-flex min-h-10 items-center gap-1.5 rounded-sm font-medium transition-colors hover:text-zinc-100 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-4 focus-visible:ring-offset-[#050505]"
+              >
+                <SiGithub className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                Site source
+              </a>
+            )}
           </div>
 
           <div className="mt-4 text-center">

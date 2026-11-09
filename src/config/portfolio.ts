@@ -10,6 +10,7 @@ export const templateRecaptchaSiteKey = "6LdpcQwuAAAAAKZmEk4kNAMUhwXICzSYRGjM5AT
  */
 export const portfolio: PortfolioConfig = {
   site: {
+    sourceLink: "https://github.com/metarsh/metarsh.github.io",
     // GitHub Pages detects the deployment URL automatically for copied repositories.
     title: "arsh",
     description:
@@ -409,6 +410,7 @@ export const portfolio: PortfolioConfig = {
       roleAndDecisions:
         "Built the full app and deployment pipeline. I moved all LLM calls into background BullMQ jobs so the frontend never hangs on inference, and used Redis locks with exponential backoff to prevent Reddit API rate limit bans during traffic spikes. Also handled authorization, authentication from scratch.",
       link: "http://leadly.live",
+      sourceLink: "https://github.com/metarsh/leadly",
       tags: ["Next.js", "Express", "BullMQ", "Gemini AI", "Prisma", "Docker", "Redis"],
       gallery: [
         "/images/projects/leadly-dashboard.webp",
@@ -435,7 +437,7 @@ export const portfolio: PortfolioConfig = {
       ],
       roleAndDecisions:
         "Rewrote the bot from single-threaded asyncio to uvloop with multi-worker concurrency. When high-volume chat traffic exhausted MongoDB connections, I built an in-memory batch buffer that reduced database writes by 95% and added a two-tier LRU plus Redis cache to eliminate read bottlenecks on permission lookups.",
-      link: "https://github.com/metarsh/Emilia",
+      sourceLink: "https://github.com/metarsh/Emilia",
       botLink: "https://t.me/Elf_Robot",
       tags: ["Python", "MongoDB", "Pyrogram", "Telethon", "Redis", "Groq AI"],
       icon: "Bot",
@@ -452,6 +454,11 @@ export const portfolio: PortfolioConfig = {
       result:
         "Learned aggregation of 4 non-IID MentalBERT classifiers: 93.50% on 4,432 test (FedAvg 83.98%, centralized 94.04%), R² = 0.953.",
       links: [
+        {
+          label: "Source",
+          href: "https://github.com/metarsh/DECAF",
+          icon: "github",
+        },
         {
           label: "Training",
           href: "https://www.kaggle.com/code/arshjaved/novel",
@@ -477,6 +484,11 @@ export const portfolio: PortfolioConfig = {
       result:
         "Analysis of 58,289 articles across 5 outlets using RoBERTa, BART, spaCy, and BERTopic with nonparametric validation.",
       links: [
+        {
+          label: "Source",
+          href: "https://github.com/metarsh/CONFA",
+          icon: "github",
+        },
         {
           label: "Dataset + Code",
           href: "https://www.kaggle.com/datasets/arshjaved/political-bias-analysis",

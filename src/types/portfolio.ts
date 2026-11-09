@@ -16,7 +16,8 @@ export type Project = {
   title: string;
   tagline: string;
   description: string;
-  link: string;
+  link?: string;
+  sourceLink?: string;
   tags: string[];
   matte?: string;
   lightText?: boolean;
@@ -64,6 +65,7 @@ export type PortfolioConfig = {
     url: string;
     basePath: string;
     customDomain: string;
+    sourceLink?: string;
     language: string;
     locale: string;
     themeColor: string;
@@ -103,7 +105,7 @@ export type PortfolioConfig = {
     venue: string;
     result: string;
     matte: string;
-    links: { label: string; href: string }[];
+    links: { label: string; href: string; icon?: "github" }[];
   }[];
   research: { image: string; imageAlt: string; badge: string };
   experiences: {

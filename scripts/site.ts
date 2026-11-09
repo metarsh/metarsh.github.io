@@ -98,7 +98,7 @@ export const portfolioSite = (portfolio: PortfolioConfig): Plugin => {
     if (sections.about.enabled) parts.push(`## Education\n${portfolio.about.education}`);
     if (sections.work.enabled)
       parts.push(
-        `## Projects\n${portfolio.projects.map((project) => `### [${project.title}](${project.link})\n${project.description}\n\nStack: ${project.tags.join(", ")}`).join("\n\n")}`,
+        `## Projects\n${portfolio.projects.map((project) => `### [${project.title}](${project.link || project.botLink || project.sourceLink || siteUrl})\n${project.description}\n\nStack: ${project.tags.join(", ")}`).join("\n\n")}`,
       );
     if (sections.skills.enabled)
       parts.push(

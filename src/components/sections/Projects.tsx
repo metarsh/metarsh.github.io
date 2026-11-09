@@ -224,16 +224,21 @@ const ProjectDialog = ({ project, onClose }: { project: Project; onClose: () => 
                 </div>
               </div>
 
-              {(project.link || project.botLink) && (
+              {(project.link || project.botLink || project.sourceLink) && (
                 <div className="flex flex-wrap items-center gap-2.5">
                   {project.link && (
                     <Button
                       asChild
                       size="sm"
-                      className="h-8 px-4 rounded-full bg-white hover:bg-zinc-200 text-zinc-950 font-sans text-xs font-medium transition-colors border-0"
+                      className="h-10 gap-1.5 px-4 rounded-full bg-white hover:bg-zinc-200 text-zinc-950 font-sans text-xs font-medium transition-colors border-0"
                     >
-                      <a href={project.link} target="_blank" rel="noopener noreferrer">
-                        <Globe className="mr-1.5 h-3.5 w-3.5" /> Live site
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${project.title} - Live site (opens in a new tab)`}
+                      >
+                        <Globe className="h-3.5 w-3.5" aria-hidden="true" /> Live site
                       </a>
                     </Button>
                   )}
@@ -241,25 +246,39 @@ const ProjectDialog = ({ project, onClose }: { project: Project; onClose: () => 
                   {project.botLink && (
                     <Button
                       asChild
-                      variant="outline"
+                      variant={project.link ? "outline" : "default"}
                       size="sm"
-                      className="h-8 px-4 rounded-full border-white/15 bg-white/[0.03] text-zinc-200 hover:bg-white/10 hover:text-white font-sans text-xs transition-colors"
+                      className={`h-10 gap-1.5 px-4 rounded-full font-sans text-xs font-medium transition-colors ${
+                        project.link
+                          ? "border-white/15 bg-white/[0.03] text-zinc-200 hover:bg-white/10 hover:text-white"
+                          : "border-0 bg-white text-zinc-950 hover:bg-zinc-200"
+                      }`}
                     >
-                      <a href={project.botLink} target="_blank" rel="noopener noreferrer">
-                        <MessageCircle className="mr-1.5 h-3.5 w-3.5" /> Telegram Bot
+                      <a
+                        href={project.botLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${project.title} - Telegram Bot (opens in a new tab)`}
+                      >
+                        <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> Telegram Bot
                       </a>
                     </Button>
                   )}
 
-                  {project.link?.includes("github.com") && (
+                  {project.sourceLink && (
                     <Button
                       asChild
                       variant="outline"
                       size="sm"
-                      className="h-8 px-4 rounded-full border-white/15 bg-white/[0.03] text-zinc-200 hover:bg-white/10 hover:text-white font-sans text-xs transition-colors"
+                      className="h-10 gap-1.5 px-4 rounded-full border-white/15 bg-white/[0.03] text-zinc-200 hover:bg-white/10 hover:text-white font-sans text-xs font-medium transition-colors"
                     >
-                      <a href={project.link} target="_blank" rel="noopener noreferrer">
-                        <SiGithub className="mr-1.5 h-3.5 w-3.5" /> Source
+                      <a
+                        href={project.sourceLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${project.title} - Source on GitHub (opens in a new tab)`}
+                      >
+                        <SiGithub className="h-3.5 w-3.5" aria-hidden="true" /> Source
                       </a>
                     </Button>
                   )}
@@ -297,7 +316,10 @@ const ProjectDialog = ({ project, onClose }: { project: Project; onClose: () => 
                         key={item}
                         className="flex items-start gap-2.5 text-sm text-zinc-300 leading-relaxed font-sans"
                       >
-                        <span aria-hidden="true" className="text-muted-foreground text-xs mt-1 shrink-0">
+                        <span
+                          aria-hidden="true"
+                          className="text-muted-foreground text-xs mt-1 shrink-0"
+                        >
                           ▪
                         </span>
                         <span>{item}</span>

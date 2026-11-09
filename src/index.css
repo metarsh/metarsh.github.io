@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Rock Salt";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("@fontsource/rock-salt/files/rock-salt-latin-400-normal.woff2") format("woff2");
+}
+
 @theme inline {
   --font-display: "Instrument Serif", Georgia, serif;
   --font-serif: "Instrument Serif", Georgia, serif;

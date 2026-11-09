@@ -98,7 +98,10 @@ export const Skills = () => {
 
                   {stackLayers.map((layer) => (
                     <div key={layer.id} className="grid grid-cols-[100px_minmax(0,1fr)] gap-x-3">
-                      <span className="whitespace-nowrap text-muted-foreground" title={layer.headline}>
+                      <span
+                        className="whitespace-nowrap text-muted-foreground"
+                        title={layer.headline}
+                      >
                         <span
                           className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle"
                           style={{ backgroundColor: layer.matte }}

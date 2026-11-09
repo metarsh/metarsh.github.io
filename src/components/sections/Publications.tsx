@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import { SiGithub } from "react-icons/si";
 import { portfolio } from "@/config/portfolio";
 import { assetUrl } from "@/lib/assets";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -189,13 +190,18 @@ export const Publications = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`${pub.title} - ${l.label} (opens in a new tab)`}
-                      className="group inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 font-sans text-xs font-medium text-zinc-300 transition-colors hover:border-white/30 hover:bg-white/[0.06] hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white"
+                      className="group inline-flex min-h-10 items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-3 py-1.5 font-sans text-xs font-medium text-zinc-300 transition-colors hover:border-white/30 hover:bg-white/[0.06] hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white"
                     >
+                      {l.icon === "github" && (
+                        <SiGithub className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                      )}
                       <span>{l.label}</span>
-                      <ArrowRight
-                        className="h-3 w-3 text-muted-foreground transition-transform group-hover:translate-x-0.5"
-                        aria-hidden="true"
-                      />
+                      {l.icon !== "github" && (
+                        <ArrowRight
+                          className="h-3 w-3 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                          aria-hidden="true"
+                        />
+                      )}
                       <span className="sr-only">(opens in a new tab)</span>
                     </a>
                   ))}

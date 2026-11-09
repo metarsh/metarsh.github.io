@@ -6,7 +6,6 @@ import "@fontsource/instrument-serif/400-italic.css";
 import "@fontsource-variable/caveat";
 import "@fontsource-variable/plus-jakarta-sans";
 import "@fontsource-variable/jetbrains-mono";
-import "@fontsource/rock-salt";
 import "./index.css";
 
 const rootElement = document.getElementById("root");

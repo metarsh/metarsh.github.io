@@ -43,10 +43,7 @@ export const About = () => {
           <p className="flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1 font-sans text-sm font-medium leading-relaxed tracking-tight text-zinc-300">
             <span>{educationSummary}</span>
             {educationDetails.map((detail) => (
-              <span
-                key={detail}
-                className="inline-flex items-baseline gap-3 whitespace-nowrap"
-              >
+              <span key={detail} className="inline-flex items-baseline gap-3 whitespace-nowrap">
                 <span aria-hidden="true">·</span>
                 {detail}
               </span>

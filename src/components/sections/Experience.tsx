@@ -25,7 +25,9 @@ export const Experience = () => {
 
       <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 sm:gap-4">
         <h3 className="text-xl font-bold tracking-tight text-white font-sans">{experience.role}</h3>
-        <span className="font-sans text-xs text-muted-foreground shrink-0">{experience.timeframe}</span>
+        <span className="font-sans text-xs text-muted-foreground shrink-0">
+          {experience.timeframe}
+        </span>
       </div>
 
       <p className="mt-1 font-sans text-sm font-medium text-zinc-300">{experience.company}</p>
