@@ -39,7 +39,7 @@ export const portfolio: PortfolioConfig = {
   profile: {
     name: "Arsh Javed",
     username: "halalneko",
-    role: "product engineer",
+    role: "software developer",
     tagline: "i can make it work and i like cats.",
     email: "arsh0javed@gmail.com",
     location: "Dehradun, Uttarakhand, India",

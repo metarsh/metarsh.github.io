@@ -1,11 +1,10 @@
 # Arsh Javed
-Role: Software Development and Product Engineer
+Role: Software Development Engineer
 Location: Dehradun, Uttarakhand, India
 Updated: 2026-11-11
 
 ## Contact & Links
 - Email: arsh0javed@gmail.com
-- Phone: +91-9897260157
 - Website: https://arshjaved.in/
 - GitHub: https://github.com/metarsh
 - LinkedIn: https://linkedin.com/in/arsh-javed
@@ -13,7 +12,7 @@ Updated: 2026-11-11
 - Plain-Text Resume: https://arshjaved.in/resume.llm.txt
 
 ## Summary
-Computer Science undergraduate focused on product engineering, backend from first principles and cloud deployments.
+Computer Science undergraduate focused on software development, backend from first principles and cloud deployments.
 
 ## Education
 ### Graphic Era (Deemed to be) University — Dehradun, India
@@ -38,7 +37,7 @@ Computer Science undergraduate focused on product engineering, backend from firs
   - Owned backend architecture, database schema, and REST APIs for a B2B SaaS that finds leads from Reddit, backed by PostgreSQL and Redis.
   - Built session-based authentication and security flows from scratch, including email/password login, email verification, Google OAuth, password recovery, and Redis rate limiting (user-level and IP-level).
   - Implemented background workers and scheduled jobs to fetch Reddit posts, score them, and match leads against customer profiles using AI providers.
-  - Containerized backend, worker, and frontend services with Docker Compose, configured GitHub Actions CI, and self-hosted Coolify on an Ubuntu Linux VM on Oracle Cloud (OCI), pointing custom domains to the server IP and routing both Leadly and Coolify behind Nginx reverse proxy.
+  - Containerized backend, worker, and frontend services with Docker Compose, configured GitHub Actions CI, and self-hosted Coolify on an Ubuntu Linux VM on Oracle Cloud (OCI), pointing custom domains to the server IP and routing both Leadly and Coolify behind an Nginx reverse proxy.
 
 ### Emilia (2022 – Present)
 - Role: Creator & Maintainer
@@ -46,7 +45,7 @@ Computer Science undergraduate focused on product engineering, backend from firs
 - Repository: https://github.com/metarsh/emilia
 - Stack: Python, MongoDB, Redis, Docker, Portainer, Linux, OCI
 - Highlights:
-  - Built and maintained an open-source multipurpose Telegram bot for group moderation, spam control and music utilities, used by 900K+ users across 5,900+ chats.
+  - Built and maintained an open-source multipurpose Telegram bot for group moderation, spam control, and music utilities, used by 900K+ users across 5,900+ chats.
   - Added a bot-cloning system that lets users run their own independent bot instances (70+ active clones).
   - Improved query speeds and prevented abuse by implementing MongoDB database indexing, Redis caching, and rate limiting.
   - Self-hosted the bot in Docker containers managed through Portainer on an Ubuntu Linux VM on Oracle Cloud (OCI), with automated 24-hour database backups.

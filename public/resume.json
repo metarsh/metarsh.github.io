@@ -2,11 +2,10 @@
   "$schema": "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
   "basics": {
     "name": "Arsh Javed",
-    "label": "Software Development and Product Engineer",
+    "label": "Software Development Engineer",
     "email": "arsh0javed@gmail.com",
-    "phone": "+91-9897260157",
     "url": "https://arshjaved.in/",
-    "summary": "Computer Science undergraduate focused on product engineering, backend from first principles and cloud deployments.",
+    "summary": "Computer Science undergraduate focused on software development, backend from first principles and cloud deployments.",
     "location": {
       "city": "Dehradun",
       "region": "Uttarakhand",
@@ -90,7 +89,7 @@
         "Owned backend architecture, database schema, and REST APIs for a B2B SaaS that finds leads from Reddit, backed by PostgreSQL and Redis.",
         "Built session-based authentication and security flows from scratch, including email/password login, email verification, Google OAuth, password recovery, and Redis rate limiting (user-level and IP-level).",
         "Implemented background workers and scheduled jobs to fetch Reddit posts, score them, and match leads against customer profiles using AI providers.",
-        "Containerized backend, worker, and frontend services with Docker Compose, configured GitHub Actions CI, and self-hosted Coolify on an Ubuntu Linux VM on Oracle Cloud (OCI), pointing custom domains to the server IP and routing both Leadly and Coolify behind Nginx reverse proxy."
+        "Containerized backend, worker, and frontend services with Docker Compose, configured GitHub Actions CI, and self-hosted Coolify on an Ubuntu Linux VM on Oracle Cloud (OCI), pointing custom domains to the server IP and routing both Leadly and Coolify behind an Nginx reverse proxy."
       ]
     },
     {
@@ -101,7 +100,7 @@
       "roles": ["Creator & Maintainer"],
       "keywords": ["Python", "MongoDB", "Redis", "Docker", "Portainer", "Linux", "OCI"],
       "highlights": [
-        "Built and maintained an open-source multipurpose Telegram bot for group moderation, spam control and music utilities, used by 900K+ users across 5,900+ chats.",
+        "Built and maintained an open-source multipurpose Telegram bot for group moderation, spam control, and music utilities, used by 900K+ users across 5,900+ chats.",
         "Added a bot-cloning system that lets users run their own independent bot instances (70+ active clones).",
         "Improved query speeds and prevented abuse by implementing MongoDB database indexing, Redis caching, and rate limiting.",
         "Self-hosted the bot in Docker containers managed through Portainer on an Ubuntu Linux VM on Oracle Cloud (OCI), with automated 24-hour database backups."
