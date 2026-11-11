@@ -99,15 +99,7 @@
       "startDate": "2022",
       "url": "https://t.me/elf_robot",
       "roles": ["Creator & Maintainer"],
-      "keywords": [
-        "Python",
-        "MongoDB",
-        "Redis",
-        "Docker",
-        "Portainer",
-        "Linux",
-        "OCI"
-      ],
+      "keywords": ["Python", "MongoDB", "Redis", "Docker", "Portainer", "Linux", "OCI"],
       "highlights": [
         "Built and maintained an open-source multipurpose Telegram bot for group moderation, spam control and music utilities, used by 900K+ users across 5,900+ chats.",
         "Added a bot-cloning system that lets users run their own independent bot instances (70+ active clones).",
