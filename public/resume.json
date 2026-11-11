@@ -1,0 +1,157 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
+  "basics": {
+    "name": "Arsh Javed",
+    "label": "Software Development and Product Engineer",
+    "email": "arsh0javed@gmail.com",
+    "phone": "+91-9897260157",
+    "url": "https://arshjaved.in/",
+    "summary": "Computer Science undergraduate focused on product engineering, backend from first principles and cloud deployments.",
+    "location": {
+      "city": "Dehradun",
+      "region": "Uttarakhand",
+      "countryCode": "IN"
+    },
+    "profiles": [
+      {
+        "network": "GitHub",
+        "username": "metarsh",
+        "url": "https://github.com/metarsh"
+      },
+      {
+        "network": "LinkedIn",
+        "username": "arsh-javed",
+        "url": "https://linkedin.com/in/arsh-javed"
+      }
+    ]
+  },
+  "education": [
+    {
+      "institution": "Graphic Era (Deemed to be) University",
+      "area": "Computer Science and Engineering",
+      "studyType": "B.Tech",
+      "startDate": "2023-08",
+      "endDate": "2027-08",
+      "score": "8.16 / 10.0"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Languages",
+      "keywords": ["Python", "TypeScript", "SQL"]
+    },
+    {
+      "name": "Databases",
+      "keywords": ["MongoDB", "PostgreSQL", "Redis"]
+    },
+    {
+      "name": "Cloud (IaaS & PaaS)",
+      "keywords": [
+        "Oracle Cloud Infrastructure (OCI)",
+        "Azure",
+        "DigitalOcean",
+        "Vercel",
+        "Render",
+        "Railway",
+        "Cloudflare Pages"
+      ]
+    },
+    {
+      "name": "DevOps & Infrastructure",
+      "keywords": [
+        "Docker",
+        "Docker Compose",
+        "Linux",
+        "Nginx",
+        "Git",
+        "GitHub Actions",
+        "Coolify",
+        "Portainer"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Leadly",
+      "description": "B2B SaaS platform that discovers and scores leads from Reddit.",
+      "startDate": "2025",
+      "url": "https://leadly.tryhanabi.com",
+      "roles": ["Backend Developer"],
+      "keywords": [
+        "TypeScript",
+        "PostgreSQL",
+        "Redis",
+        "Docker Compose",
+        "Nginx",
+        "Coolify",
+        "OCI"
+      ],
+      "highlights": [
+        "Owned backend architecture, database schema, and REST APIs for a B2B SaaS that finds leads from Reddit, backed by PostgreSQL and Redis.",
+        "Built session-based authentication and security flows from scratch, including email/password login, email verification, Google OAuth, password recovery, and Redis rate limiting (user-level and IP-level).",
+        "Implemented background workers and scheduled jobs to fetch Reddit posts, score them, and match leads against customer profiles using AI providers.",
+        "Containerized backend, worker, and frontend services with Docker Compose, configured GitHub Actions CI, and self-hosted Coolify on an Ubuntu Linux VM on Oracle Cloud (OCI), pointing custom domains to the server IP and routing both Leadly and Coolify behind Nginx reverse proxy."
+      ]
+    },
+    {
+      "name": "Emilia",
+      "description": "Open-source multipurpose Telegram bot for group moderation, spam control, music utilities, and multi-tenant bot cloning.",
+      "startDate": "2022",
+      "url": "https://t.me/elf_robot",
+      "roles": ["Creator & Maintainer"],
+      "keywords": [
+        "Python",
+        "MongoDB",
+        "Redis",
+        "Docker",
+        "Portainer",
+        "Linux",
+        "OCI"
+      ],
+      "highlights": [
+        "Built and maintained an open-source multipurpose Telegram bot for group moderation, spam control and music utilities, used by 900K+ users across 5,900+ chats.",
+        "Added a bot-cloning system that lets users run their own independent bot instances (70+ active clones).",
+        "Improved query speeds and prevented abuse by implementing MongoDB database indexing, Redis caching, and rate limiting.",
+        "Self-hosted the bot in Docker containers managed through Portainer on an Ubuntu Linux VM on Oracle Cloud (OCI), with automated 24-hour database backups."
+      ]
+    }
+  ],
+  "awards": [
+    {
+      "title": "1st Place — EnCode 2025 Hackathon",
+      "date": "2025-01",
+      "awarder": "E-Cell, IIT Guwahati",
+      "summary": "Won 1st place at EnCode 2025 hackathon organized by E-Cell, IIT Guwahati."
+    },
+    {
+      "title": "Top 5 — PolicyBazaar Track, Google GenAI Exchange Hackathon 2024",
+      "date": "2024-12",
+      "awarder": "Google",
+      "summary": "Placed in the top 5 (PolicyBazaar track) at Google GenAI Exchange Hackathon 2024 and invited to the Google Gurgaon office."
+    },
+    {
+      "title": "Hackathon Finalist (5+ Finals, 20+ Participations)",
+      "awarder": "Multiple Organizers",
+      "summary": "Finalist in 5+ hackathons and participated in 20+ hackathons."
+    }
+  ],
+  "publications": [
+    {
+      "name": "Reconstructing Global Models from Federated Client Weights Using Neural Networks",
+      "publisher": "IC2E3 2026 (NIT Uttarakhand)",
+      "releaseDate": "2026-05-14",
+      "summary": "First-authored and presented accepted conference research paper at IC2E3 2026, NIT Uttarakhand."
+    },
+    {
+      "name": "Framing, Sentiment, and Agenda-Setting Bias: A Computational Analysis of News Coverage Across Five Major Outlets",
+      "publisher": "IEEE INDISCON 2026 (MNIT Jaipur)",
+      "releaseDate": "2026",
+      "summary": "First-authored and presented accepted conference research paper at IEEE INDISCON 2026, MNIT Jaipur."
+    }
+  ],
+  "meta": {
+    "canonical": "https://arshjaved.in/resume.json",
+    "version": "v1.0.0",
+    "lastModified": "2026-11-11T00:00:00+05:30"
+  }
+}
