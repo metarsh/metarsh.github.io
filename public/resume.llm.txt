@@ -1,0 +1,60 @@
+# Arsh Javed
+Role: Software Development and Product Engineer
+Location: Dehradun, Uttarakhand, India
+Updated: 2026-11-11
+
+## Contact & Links
+- Email: arsh0javed@gmail.com
+- Phone: +91-9897260157
+- Website: https://arshjaved.in/
+- GitHub: https://github.com/metarsh
+- LinkedIn: https://linkedin.com/in/arsh-javed
+- JSON Resume: https://arshjaved.in/resume.json
+- Plain-Text Resume: https://arshjaved.in/resume.llm.txt
+
+## Summary
+Computer Science undergraduate focused on product engineering, backend from first principles and cloud deployments.
+
+## Education
+### Graphic Era (Deemed to be) University — Dehradun, India
+- Degree: B.Tech in Computer Science and Engineering
+- Duration: August 2023 – August 2027
+- CGPA: 8.16 / 10.0
+
+## Skills
+- Languages: Python, TypeScript, SQL
+- Databases: MongoDB, PostgreSQL, Redis
+- Cloud (IaaS & PaaS): Oracle Cloud Infrastructure (OCI), Azure, DigitalOcean, Vercel, Render, Railway, Cloudflare Pages
+- DevOps & Infrastructure: Docker, Docker Compose, Linux, Nginx, Git, GitHub Actions, Coolify, Portainer
+
+## Projects
+
+### Leadly (2025 – Present)
+- Role: Backend Developer
+- Live URL: https://leadly.tryhanabi.com
+- Repository: https://github.com/metarsh/leadly
+- Stack: TypeScript, PostgreSQL, Redis, Docker Compose, Nginx, Coolify, OCI
+- Highlights:
+  - Owned backend architecture, database schema, and REST APIs for a B2B SaaS that finds leads from Reddit, backed by PostgreSQL and Redis.
+  - Built session-based authentication and security flows from scratch, including email/password login, email verification, Google OAuth, password recovery, and Redis rate limiting (user-level and IP-level).
+  - Implemented background workers and scheduled jobs to fetch Reddit posts, score them, and match leads against customer profiles using AI providers.
+  - Containerized backend, worker, and frontend services with Docker Compose, configured GitHub Actions CI, and self-hosted Coolify on an Ubuntu Linux VM on Oracle Cloud (OCI), pointing custom domains to the server IP and routing both Leadly and Coolify behind Nginx reverse proxy.
+
+### Emilia (2022 – Present)
+- Role: Creator & Maintainer
+- Live URL: https://t.me/elf_robot
+- Repository: https://github.com/metarsh/emilia
+- Stack: Python, MongoDB, Redis, Docker, Portainer, Linux, OCI
+- Highlights:
+  - Built and maintained an open-source multipurpose Telegram bot for group moderation, spam control and music utilities, used by 900K+ users across 5,900+ chats.
+  - Added a bot-cloning system that lets users run their own independent bot instances (70+ active clones).
+  - Improved query speeds and prevented abuse by implementing MongoDB database indexing, Redis caching, and rate limiting.
+  - Self-hosted the bot in Docker containers managed through Portainer on an Ubuntu Linux VM on Oracle Cloud (OCI), with automated 24-hour database backups.
+
+## Achievements & Publications
+- Won 1st place at EnCode 2025 hackathon organized by E-Cell, IIT Guwahati.
+- Placed in the top 5 (PolicyBazaar track) at Google GenAI Exchange Hackathon 2024 and invited to the Google Gurgaon office.
+- First-authored and presented two accepted conference research papers:
+  - "Reconstructing Global Models from Federated Client Weights Using Neural Networks" — IC2E3 2026 (NIT Uttarakhand)
+  - "Framing, Sentiment, and Agenda-Setting Bias: A Computational Analysis of News Coverage Across Five Major Outlets" — IEEE INDISCON 2026 (MNIT Jaipur)
+- Finalist in 5+ hackathons and participated in 20+ hackathons.
