@@ -53,10 +53,11 @@ export const InsightsTeaser = () => {
               </div>
               <Button
                 asChild
-                className="gap-2 bg-white/10 hover:bg-white/20 text-white border-0 font-sans"
+                className="max-w-full whitespace-normal gap-2 bg-white/10 hover:bg-white/20 text-white border-0 font-sans"
               >
                 <Link to="/insights">
-                  Read article <ArrowRight className="h-4 w-4" />
+                  <span className="min-w-0 break-words">Read article</span>
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
             </div>

@@ -61,6 +61,7 @@ export const FloatingCat = () => {
     cat.element.style.transition =
       "transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease";
     cat.element.setAttribute("title", portfolio.pet.label);
+    cat.element.removeAttribute("aria-hidden");
     cat.element.setAttribute("role", "button");
     cat.element.setAttribute("aria-label", "Playful companion pet. Click to pet.");
     cat.element.setAttribute("tabindex", "0");
@@ -70,17 +71,16 @@ export const FloatingCat = () => {
     emoteContainer.style.position = "fixed";
     emoteContainer.style.pointerEvents = "none";
     emoteContainer.style.zIndex = "41";
-    emoteContainer.style.left = `${cat.x}px`;
-    emoteContainer.style.top = `${cat.y - 16}px`;
-    emoteContainer.style.transform = "translate(-50%, -100%)";
+    emoteContainer.style.left = "0";
+    emoteContainer.style.top = "0";
+    emoteContainer.style.transform = `translate(${cat.x}px, ${cat.y - 16}px) translate(-50%, -100%)`;
     emoteContainer.style.display = "flex";
     emoteContainer.style.flexDirection = "column";
     emoteContainer.style.alignItems = "center";
     document.body.appendChild(emoteContainer);
 
     const handleDraw = () => {
-      emoteContainer.style.left = `${cat.x}px`;
-      emoteContainer.style.top = `${cat.y - 14}px`;
+      emoteContainer.style.transform = `translate(${cat.x}px, ${cat.y - 14}px) translate(-50%, -100%)`;
 
       const isSleeping = cat.idleAnimation === "sleeping";
       const existingZzz = emoteContainer.querySelector(".pet-zzz");
@@ -193,7 +193,8 @@ export const FloatingCat = () => {
       }
 
       const clampedX = Math.min(Math.max(currentBounds.minX, cat.x), currentBounds.maxX);
-      cat.setPosition(clampedX, currentBounds.floorY);
+      cat.x = clampedX;
+      cat.y = currentBounds.floorY;
       cat.setTarget(clampedX, currentBounds.floorY);
       cat.draw();
     };

@@ -12,7 +12,7 @@ const Insights = () => {
   return (
     <div className="min-h-screen bg-[#050505] text-zinc-100 pt-24 pb-28 px-4 sm:px-6 lg:px-8 selection:bg-white/20">
       <TopBlur height={75} />
-      <div className="max-w-3xl mx-auto">
+      <main id="main-content" tabIndex={-1} className="max-w-3xl mx-auto">
         <div className="mb-10">
           <Button
             asChild
@@ -85,7 +85,7 @@ const Insights = () => {
             </div>
           </div>
         </article>
-      </div>
+      </main>
     </div>
   );
 };

@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
-import type { Plugin } from "vite";
+import { createServer, type Plugin } from "vite";
+import { pageMetadata } from "../src/lib/metadata.ts";
 import type { PortfolioConfig } from "../src/types/portfolio.ts";
 
 export const portfolioSite = (portfolio: PortfolioConfig): Plugin => {
@@ -11,7 +12,7 @@ export const portfolioSite = (portfolio: PortfolioConfig): Plugin => {
       (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!,
     );
   const basePath = portfolio.site.basePath;
-  const siteUrl = `${portfolio.site.url.replace(/\/+$/, "")}/`;
+  const siteUrl = new URL(basePath, portfolio.site.url).href;
   const assetPath = (value: string) =>
     /^https?:\/\//.test(value) ? value : `${basePath}${value.replace(/^\/+/, "")}`;
   const absoluteAsset = (value: string) =>
@@ -25,13 +26,14 @@ export const portfolioSite = (portfolio: PortfolioConfig): Plugin => {
     const recaptcha = portfolio.contact.recaptchaSiteKey
       ? "https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/"
       : "";
-    return `default-src 'self'; base-uri 'self'; object-src 'none'; frame-src ${recaptcha || "'none'"}; media-src 'self' data: blob:; script-src 'self' ${recaptcha}${dev ? " 'unsafe-inline'" : ""}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https: data:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ${formOrigin} ${recaptcha}${dev ? " ws://localhost:* ws://127.0.0.1:* ws://[::1]:*" : ""}; form-action 'self' ${formOrigin}; manifest-src 'self';`.replace(
+    return `default-src 'self'; base-uri 'self'; object-src 'none'; frame-src ${recaptcha || "'none'"}; media-src 'self' data: blob:; script-src 'self' ${recaptcha}${dev ? " 'unsafe-inline'" : ""}; style-src 'self' 'unsafe-inline' ; img-src 'self' https: data:; font-src 'self' data: ; connect-src 'self' ${formOrigin} ${recaptcha}${dev ? " ws://localhost:* ws://127.0.0.1:* ws://[::1]:*" : ""}; form-action 'self' ${formOrigin}; manifest-src 'self';`.replace(
       / +;/g,
       ";",
     );
   };
 
-  const metadata = (dev: boolean) => {
+  const metadata = (dev: boolean, pathname = "/") => {
+    const page = pageMetadata(portfolio, pathname);
     const { site, profile, socials } = portfolio;
     const meta = (name: string, content: string, property = false) =>
       `<meta ${property ? "property" : "name"}="${name}" content="${escapeHtml(content)}" />`;
@@ -53,35 +55,35 @@ export const portfolioSite = (portfolio: PortfolioConfig): Plugin => {
             : {}),
         },
         {
-          "@type": "ProfilePage",
-          "@id": `${siteUrl}#profilepage`,
-          name: site.title,
-          url: siteUrl,
+          "@type": page.type === "article" ? "Article" : "ProfilePage",
+          "@id": `${page.canonical}#page`,
+          name: page.title,
+          url: page.canonical,
           mainEntity: { "@id": `${siteUrl}#person` },
         },
       ],
     };
     return [
-      `<title>${escapeHtml(site.title)}</title>`,
+      `<title>${escapeHtml(page.title)}</title>`,
       meta("theme-color", site.themeColor),
-      meta("description", site.description),
+      meta("description", page.description),
       meta("keywords", [profile.name, ...site.keywords].join(", ")),
       meta("author", profile.name),
       `<meta http-equiv="Content-Security-Policy" content="${escapeHtml(contentSecurityPolicy(dev))}" />`,
       `<link rel="icon" href="${escapeHtml(assetPath(site.favicon))}" />`,
       `<link rel="apple-touch-icon" href="${escapeHtml(assetPath(site.favicon))}" />`,
-      `<link rel="canonical" href="${escapeHtml(siteUrl)}" />`,
-      meta("og:type", "website", true),
+      `<link rel="canonical" href="${escapeHtml(page.canonical)}" />`,
+      meta("og:type", page.type, true),
       meta("og:locale", site.locale, true),
       meta("og:site_name", site.title, true),
-      meta("og:title", site.title, true),
-      meta("og:description", site.description, true),
-      meta("og:url", siteUrl, true),
+      meta("og:title", page.title, true),
+      meta("og:description", page.description, true),
+      meta("og:url", page.canonical, true),
       meta("og:image", absoluteAsset(socialImage), true),
       meta("og:image:alt", `${profile.name} — ${profile.role}`, true),
       meta("twitter:card", "summary_large_image"),
-      meta("twitter:title", site.title),
-      meta("twitter:description", site.description),
+      meta("twitter:title", page.title),
+      meta("twitter:description", page.description),
       meta("twitter:image", absoluteAsset(socialImage)),
       ...(site.googleSiteVerification
         ? [meta("google-site-verification", site.googleSiteVerification)]
@@ -118,7 +120,7 @@ export const portfolioSite = (portfolio: PortfolioConfig): Plugin => {
       );
     if (sections.insights.enabled)
       parts.push(
-        `## Insight\n[${portfolio.insight.title}](${siteUrl}#/insights)\n${portfolio.insight.summary}`,
+        `## Insight\n[${portfolio.insight.title}](${siteUrl}insights/)\n${portfolio.insight.summary}`,
       );
     return { summary, full: `${parts.join("\n\n")}\n` };
   };
@@ -127,11 +129,10 @@ export const portfolioSite = (portfolio: PortfolioConfig): Plugin => {
     const { summary, full } = crawlerContent();
     return {
       "robots.txt": `User-agent: *\nAllow: /\nSitemap: ${siteUrl}sitemap.xml\n`,
-      // HashRouter routes are fragments of the same document, so only the real URL belongs here.
-      "sitemap.xml": `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${escapeHtml(siteUrl)}</loc></url></urlset>\n`,
+      "sitemap.xml": `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${escapeHtml(siteUrl)}</loc></url>${portfolio.sections.insights.enabled ? `<url><loc>${escapeHtml(`${siteUrl}insights/`)}</loc></url>` : ""}</urlset>\n`,
       "llms.txt": summary,
       "llms-full.txt": full,
-      _headers: `/*\n  Content-Security-Policy: ${contentSecurityPolicy()}\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n  Cache-Control: public, max-age=0, must-revalidate\n\n${basePath}assets/*\n  Cache-Control: public, max-age=31536000, immutable\n`,
+      _headers: `# Edge hosts only. GitHub Pages does not apply this file.\n/*\n  Content-Security-Policy: ${contentSecurityPolicy()}\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n  Cache-Control: public, max-age=0, must-revalidate\n\n${basePath}assets/*\n  Cache-Control: public, max-age=31536000, immutable\n`,
       "404.html": `<!doctype html><html lang="${escapeHtml(portfolio.site.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Page not found</title></head><body><p>Page not found. <a href="${escapeHtml(basePath)}">Return to ${escapeHtml(portfolio.site.title)}</a>.</p></body></html>\n`,
       ...(portfolio.site.customDomain ? { CNAME: `${portfolio.site.customDomain}\n` } : {}),
     };
@@ -151,6 +152,34 @@ export const portfolioSite = (portfolio: PortfolioConfig): Plugin => {
     configResolved(config) {
       dev = config.command === "serve";
       projectRoot = config.root;
+    },
+    resolveId(id) {
+      if (id === "virtual:portfolio-images") return "\0portfolio-images";
+    },
+    async load(id) {
+      if (id !== "\0portfolio-images") return;
+      const sources = new Set<string>();
+      const collect = (value: unknown) => {
+        if (
+          typeof value === "string" &&
+          !/^(?:https?:|data:|blob:)/.test(value) &&
+          /\.(?:png|jpe?g|webp|avif|gif)$/i.test(value)
+        )
+          sources.add(value);
+        else if (Array.isArray(value)) value.forEach(collect);
+        else if (value && typeof value === "object") Object.values(value).forEach(collect);
+      };
+      collect(portfolio);
+      const entries = await Promise.all(
+        [...sources].map(async (source) => {
+          const { width, height } = await sharp(
+            path.join(projectRoot, "public", source.replace(/^\/+/, "")),
+          ).metadata();
+          if (!width || !height) throw new Error(`Missing image dimensions: ${source}`);
+          return [source, { width, height }];
+        }),
+      );
+      return `export const imageMetadata = ${JSON.stringify(Object.fromEntries(entries))};`;
     },
     buildStart() {
       if (!basePath.startsWith("/") || !basePath.endsWith("/"))
@@ -189,10 +218,14 @@ export const portfolioSite = (portfolio: PortfolioConfig): Plugin => {
     },
     transformIndexHtml: {
       order: "pre",
-      handler(html) {
+      handler(html, context) {
         return html
           .replace('lang="en"', `lang="${escapeHtml(portfolio.site.language)}"`)
-          .replace("<!-- portfolio:metadata -->", metadata(dev));
+          .replace(
+            "<!-- portfolio:metadata -->",
+            () =>
+              `<!-- portfolio:metadata:start -->${metadata(dev, (context.path || "/").replace(basePath, "/"))}<!-- portfolio:metadata:end -->`,
+          );
       },
     },
     configureServer(server) {
@@ -222,6 +255,43 @@ export const portfolioSite = (portfolio: PortfolioConfig): Plugin => {
           }
         } else next();
       });
+    },
+    async writeBundle(options) {
+      const outputDirectory = path.resolve(projectRoot, options.dir || "dist");
+      const homepage = path.join(outputDirectory, "index.html");
+      const template = await fs.promises.readFile(homepage, "utf8");
+      const renderer = await createServer({
+        configFile: false,
+        root: projectRoot,
+        base: basePath,
+        resolve: { alias: { "@": path.join(projectRoot, "src") } },
+        define: { __PORTFOLIO_SITE__: JSON.stringify(portfolio.site) },
+        plugins: [portfolioSite(portfolio)],
+        server: { middlewareMode: true, hmr: false, watch: null },
+        optimizeDeps: { noDiscovery: true, include: [] },
+        appType: "custom",
+      });
+      try {
+        const { render } = await renderer.ssrLoadModule("/src/entry-static.tsx");
+        for (const pathname of [
+          "/",
+          ...(portfolio.sections.insights.enabled ? ["/insights/"] : []),
+        ]) {
+          const content = render(`${basePath}${pathname.slice(1)}`);
+          const html = template
+            .replace('<div id="root"></div>', () => `<div id="root">${content}</div>`)
+            .replace(
+              /<!-- portfolio:metadata:start -->[\s\S]*?<!-- portfolio:metadata:end -->/,
+              () => metadata(false, pathname),
+            );
+          const destination =
+            pathname === "/" ? homepage : path.join(outputDirectory, "insights/index.html");
+          await fs.promises.mkdir(path.dirname(destination), { recursive: true });
+          await fs.promises.writeFile(destination, html);
+        }
+      } finally {
+        await renderer.close();
+      }
     },
     async generateBundle() {
       for (const [fileName, source] of Object.entries(generatedFiles()))

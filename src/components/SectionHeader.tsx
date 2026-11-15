@@ -19,7 +19,11 @@ export const SectionHeader = ({
   const centered = align === "center";
 
   const reveal = {
-    initial: reduce ? { opacity: 0 } : { opacity: 0, y: 16 },
+    initial: import.meta.env.SSR
+      ? (false as const)
+      : reduce
+        ? { opacity: 0 }
+        : { opacity: 0, y: 16 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true, amount: 0.6 },
   };

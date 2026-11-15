@@ -12,7 +12,7 @@ export const Experience = () => {
   const experienceItems = experiences.map((experience, index) => (
     <motion.article
       key={experience.role}
-      initial={{ opacity: 0, y: 20 }}
+      initial={import.meta.env.SSR ? false : { opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.5, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
@@ -24,7 +24,9 @@ export const Experience = () => {
       />
 
       <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 sm:gap-4">
-        <h3 className="text-xl font-bold tracking-tight text-white font-sans">{experience.role}</h3>
+        <h3 className="break-words text-xl font-bold tracking-tight text-white font-sans">
+          {experience.role}
+        </h3>
         <span className="font-sans text-xs text-muted-foreground shrink-0">
           {experience.timeframe}
         </span>
@@ -44,10 +46,10 @@ export const Experience = () => {
         {experience.stack.map((item) => (
           <span
             key={item}
-            className="inline-flex items-center gap-1.5 font-sans text-xs font-medium text-muted-foreground bg-white/[0.04] px-2.5 py-0.5 rounded-full hover:text-white transition-colors"
+            className="inline-flex max-w-full items-center gap-1.5 font-sans text-xs font-medium text-muted-foreground bg-white/[0.04] px-2.5 py-0.5 rounded-full hover:text-white transition-colors"
           >
             <TechLogo name={item} className="w-3.5 h-3.5 shrink-0" />
-            <span>{item}</span>
+            <span className="min-w-0 break-words">{item}</span>
           </span>
         ))}
       </div>
@@ -65,7 +67,7 @@ export const Experience = () => {
           className="mb-16"
           title={portfolio.sections.experience.title}
         />
-        <div className="grid gap-10 lg:gap-14 lg:grid-cols-[minmax(260px,360px)_1fr] items-start">
+        <div className="grid grid-cols-1 gap-10 lg:gap-14 lg:grid-cols-[minmax(260px,360px)_1fr] items-start">
           <div className="order-1 lg:order-none w-full max-w-[280px] sm:max-w-[340px] lg:max-w-none mx-auto aspect-[9/16] lg:aspect-auto lg:h-[520px] xl:h-[560px] overflow-hidden rounded-2xl border border-white/10 shadow-2xl lg:sticky lg:top-24 bg-[#09090b]">
             <img
               src={assetUrl(portfolio.experience.image)}
@@ -82,7 +84,7 @@ export const Experience = () => {
             />
           </div>
 
-          <div className="order-2 pt-2">{experienceItems}</div>
+          <div className="order-2 min-w-0 pt-2">{experienceItems}</div>
         </div>
       </div>
     </section>

@@ -1,8 +1,18 @@
 import { Link as LinkIcon, Mail, Check } from "lucide-react";
 import { useClipboard } from "@/hooks/useClipboard";
 import { portfolio } from "@/config/portfolio";
-import React, { useRef } from "react";
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
+import React, { useCallback, useEffect, useRef } from "react";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  useReducedMotion,
+  AnimatePresence,
+  frame,
+  cancelFrame,
+  type MotionValue,
+} from "framer-motion";
 import { SiGithub, SiTelegram, SiHuggingface } from "react-icons/si";
 import { FaLinkedin } from "react-icons/fa6";
 
@@ -47,24 +57,24 @@ const defaultDockItems: DockItemData[] = [
 
 interface DockIconProps {
   item: DockItemData;
-  mouseX: ReturnType<typeof useMotionValue<number>>;
+  register: (id: string, element: HTMLElement | null, distance: MotionValue<number>) => void;
+  reducedMotion: boolean;
 }
 
-const DockIcon = ({ item, mouseX }: DockIconProps) => {
-  const ref = useRef<HTMLElement | null>(null);
-  const setRef = (element: HTMLAnchorElement | HTMLButtonElement | null) => {
-    ref.current = element;
-  };
+const DockIcon = ({ item, register, reducedMotion }: DockIconProps) => {
+  const distance = useMotionValue(Infinity);
+  const setRef = useCallback(
+    (element: HTMLAnchorElement | HTMLButtonElement | null) => {
+      register(item.id, element, distance);
+    },
+    [item.id, register, distance],
+  );
   const { copied, copyText } = useClipboard();
-  const distance = useTransform(mouseX, (val) => {
-    const bounds = ref.current?.getBoundingClientRect();
-    if (!bounds) return Infinity;
-    return val - bounds.x - bounds.width / 2;
-  });
   const sizeSync = useTransform(distance, [-110, 0, 110], [40, 52, 40]);
   const size = useSpring(sizeSync, { mass: 0.1, stiffness: 240, damping: 16 });
   const iconSizeSync = useTransform(distance, [-110, 0, 110], [18, 24, 18]);
   const iconSize = useSpring(iconSizeSync, { mass: 0.1, stiffness: 240, damping: 16 });
+  const iconScale = useTransform(iconSize, (value) => value / 18);
   const ySync = useTransform(distance, [-110, 0, 110], [0, -8, 0]);
   const y = useSpring(ySync, { mass: 0.1, stiffness: 240, damping: 16 });
 
@@ -85,7 +95,11 @@ const DockIcon = ({ item, mouseX }: DockIconProps) => {
         ref={setRef}
         type="button"
         onClick={handleClick}
-        style={{ width: size, height: size, y }}
+        style={{
+          width: reducedMotion ? 40 : size,
+          height: reducedMotion ? 40 : size,
+          y: reducedMotion ? 0 : y,
+        }}
         aria-label={copied ? "Email copied to clipboard!" : "Copy email address"}
         title={copied ? "Copied!" : `Click to copy email (${item.href.replace(/^mailto:/, "")})`}
         className={`group relative flex items-center justify-center rounded-full border transition-colors shadow-lg cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white shrink-0 ${
@@ -95,7 +109,7 @@ const DockIcon = ({ item, mouseX }: DockIconProps) => {
         }`}
       >
         <motion.div
-          style={{ width: iconSize, height: iconSize }}
+          style={{ width: 18, height: 18, scale: reducedMotion ? 1 : iconScale }}
           className="flex items-center justify-center pointer-events-none"
         >
           <AnimatePresence mode="wait">
@@ -148,12 +162,16 @@ const DockIcon = ({ item, mouseX }: DockIconProps) => {
       href={item.href}
       target="_blank"
       rel="noopener noreferrer"
-      style={{ width: size, height: size, y }}
+      style={{
+        width: reducedMotion ? 40 : size,
+        height: reducedMotion ? 40 : size,
+        y: reducedMotion ? 0 : y,
+      }}
       aria-label={item.label}
       className="group relative flex items-center justify-center rounded-full bg-white/[0.04] border border-white/10 text-zinc-300 hover:text-white hover:bg-white/[0.09] hover:border-white/25 transition-colors shadow-lg cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white shrink-0"
     >
       <motion.div
-        style={{ width: iconSize, height: iconSize }}
+        style={{ width: 18, height: 18, scale: reducedMotion ? 1 : iconScale }}
         className="flex items-center justify-center pointer-events-none"
       >
         <Icon className="w-full h-full transition-colors" aria-hidden="true" />
@@ -169,18 +187,51 @@ export const SocialDock = ({
   items?: DockItemData[];
   className?: string;
 }) => {
-  const mouseX = useMotionValue(Infinity);
+  const targets = useRef(
+    new Map<string, { element: HTMLElement; distance: MotionValue<number> }>(),
+  );
+  const pointerX = useRef(Infinity);
+  const reducedMotion = !!useReducedMotion();
+  const register = useCallback(
+    (id: string, element: HTMLElement | null, distance: MotionValue<number>) => {
+      if (element) targets.current.set(id, { element, distance });
+      else targets.current.delete(id);
+    },
+    [],
+  );
+  const measure = useCallback(() => {
+    const distances = Array.from(targets.current.values()).map(({ element, distance }) => {
+      const bounds = element.getBoundingClientRect();
+      return { distance, value: pointerX.current - bounds.x - bounds.width / 2 };
+    });
+    distances.forEach(({ distance, value }) => distance.set(value));
+  }, []);
+  const reset = useCallback(() => {
+    cancelFrame(measure);
+    pointerX.current = Infinity;
+    targets.current.forEach(({ distance }) => distance.set(Infinity));
+  }, [measure]);
+
+  useEffect(() => {
+    if (reducedMotion) reset();
+    return () => cancelFrame(measure);
+  }, [measure, reducedMotion, reset]);
 
   return (
     <div
-      onMouseMove={(e) => mouseX.set(e.clientX)}
-      onMouseLeave={() => mouseX.set(Infinity)}
-      className={`relative inline-flex items-center h-[74px] gap-2 sm:gap-2.5 px-3 sm:px-3.5 rounded-full bg-white/[0.025] border border-white/10 backdrop-blur-xs shadow-xl ${className}`}
+      onPointerMove={(event) => {
+        if (reducedMotion || event.pointerType === "touch") return;
+        pointerX.current = event.clientX;
+        frame.read(measure);
+      }}
+      onPointerLeave={reset}
+      onPointerCancel={reset}
+      className={`relative inline-flex flex-wrap max-w-full items-center min-h-[74px] gap-2 sm:gap-2.5 px-3 sm:px-3.5 rounded-full bg-white/[0.025] border border-white/10 backdrop-blur-xs shadow-xl ${className}`}
       role="group"
       aria-label="Social profile quick links"
     >
       {items.map((item) => (
-        <DockIcon key={item.id} item={item} mouseX={mouseX} />
+        <DockIcon key={item.id} item={item} register={register} reducedMotion={reducedMotion} />
       ))}
     </div>
   );

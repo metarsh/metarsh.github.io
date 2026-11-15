@@ -2,21 +2,24 @@ import { scrollToSection } from "@/lib/scroll";
 import { ArrowDownRight, ArrowRight } from "lucide-react";
 import { portfolio } from "@/config/portfolio";
 import { assetUrl } from "@/lib/assets";
+import { imageMetadata } from "virtual:portfolio-images";
 import type { HeroScreen } from "@/types/portfolio";
 import { Button } from "@/components/ui/button";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { useVisibleActivity } from "@/hooks/useVisibleActivity";
 
 const { proofPoints, screens: heroScreens } = portfolio.hero;
 
-const HeroMedia = ({ screen }: { screen: HeroScreen }) => {
+const HeroMedia = ({ screen, duplicate = false }: { screen: HeroScreen; duplicate?: boolean }) => {
   const cls =
     `h-full w-full object-cover ${screen.objectPos ?? "object-center"} ${screen.scale ?? ""}`.trim();
-  const isLcp = screen === heroScreens[0];
+  const isLcp = screen === heroScreens[0] && !duplicate;
+  const dimensions = imageMetadata[screen.src];
 
   const srcSet = [
-    screen.srcSm ? `${assetUrl(screen.srcSm)} 960w` : null,
-    `${assetUrl(screen.src)} 1400w`,
+    screen.srcSm ? `${assetUrl(screen.srcSm)} ${imageMetadata[screen.srcSm].width}w` : null,
+    `${assetUrl(screen.src)} ${dimensions.width}w`,
   ]
     .filter(Boolean)
     .join(", ");
@@ -25,13 +28,13 @@ const HeroMedia = ({ screen }: { screen: HeroScreen }) => {
     <img
       src={assetUrl(screen.srcSm || screen.src)}
       srcSet={srcSet}
-      sizes="(max-width: 640px) 360px, (max-width: 1280px) 50vw, 600px"
+      sizes="(min-width: 80rem) 340px, (min-width: 422px) 320px, 76vw"
       alt={screen.alt}
-      width={screen.width}
-      height={screen.height}
+      width={dimensions.width}
+      height={dimensions.height}
       className={cls}
       loading={isLcp ? "eager" : "lazy"}
-      fetchPriority={isLcp ? "high" : "low"}
+      fetchPriority={isLcp ? "high" : duplicate ? "low" : undefined}
       decoding="async"
     />
   );
@@ -44,6 +47,8 @@ const textReveal = {
 
 export const Hero = () => {
   const containerRef = useRef<HTMLElement>(null);
+  const marqueeRef = useRef<HTMLDivElement>(null);
+  const marqueeActive = useVisibleActivity(marqueeRef);
   const reducedMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -75,7 +80,7 @@ export const Hero = () => {
             className="relative z-20 min-w-0 xl:self-center xl:flex xl:flex-col xl:justify-center"
             style={{ y: reducedMotion ? 0 : typeY }}
           >
-            <h1 className="font-marker text-[clamp(3rem,5.5vw,5rem)] leading-[1.38] tracking-[0.01em] text-white -rotate-1 select-none origin-left mb-2 overflow-visible py-2 pr-4 max-md:pr-0 max-md:origin-center max-md:text-center">
+            <h1 className="hero-name font-marker text-[clamp(3rem,5.5vw,5rem)] leading-[1.38] tracking-[0.01em] text-white -rotate-1 select-none origin-left mb-2 overflow-visible py-2 pr-4 max-md:pr-0 max-md:origin-center max-md:text-center">
               <span className="sr-only">{portfolio.profile.name}</span>
               {portfolio.profile.name.split(/\s+/).map((part, index) => (
                 <motion.span
@@ -86,7 +91,7 @@ export const Hero = () => {
                       ? "block overflow-visible"
                       : "block overflow-visible text-zinc-300 translate-x-1 sm:translate-x-2"
                   }
-                  initial={textReveal.initial}
+                  initial={import.meta.env.SSR ? false : textReveal.initial}
                   animate={textReveal.animate}
                   transition={{ duration: 0.78, delay: index * 0.11, ease: [0.16, 1, 0.3, 1] }}
                 >
@@ -97,7 +102,7 @@ export const Hero = () => {
 
             <motion.div
               className="mt-[clamp(1.25rem,3svh,1.75rem)] max-w-[60ch] max-md:mx-auto max-md:text-center"
-              initial={{ opacity: 0, y: 22 }}
+              initial={import.meta.env.SSR ? false : { opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.42, duration: 0.62, ease: [0.16, 1, 0.3, 1] }}
             >
@@ -137,35 +142,47 @@ export const Hero = () => {
               ))}
             </div>
 
-            <div className="xl:hidden relative overflow-hidden motion-reduce:overflow-x-auto">
+            <div className="xl:hidden relative">
               <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-[#050505] to-transparent z-20" />
               <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-linear-to-l from-[#050505] to-transparent z-20" />
-              <div className="marquee-track flex w-max">
-                {[false, true].map((isDuplicate) => (
-                  <div
-                    key={isDuplicate ? "clone" : "original"}
-                    className={`flex items-center gap-3.5 pr-3.5 ${isDuplicate ? "motion-reduce:hidden" : ""}`}
-                    aria-hidden={isDuplicate || undefined}
-                  >
-                    {heroScreens.map((screen) => (
-                      <figure
-                        key={screen.title}
-                        className={`relative aspect-[16/10] w-[76vw] max-w-[320px] shrink-0 overflow-hidden rounded-2xl bg-[#09090b] transition-all duration-300 ${
-                          screen.isDark
-                            ? "border border-white/25 ring-1 ring-white/15"
-                            : "ring-1 ring-white/15"
-                        }`}
-                        style={{
-                          boxShadow: screen.isDark
-                            ? "0 0 22px -2px rgba(255,255,255,0.12), 0 20px 48px -10px rgba(0,0,0,0.85)"
-                            : "0 24px 60px -12px rgba(0,0,0,0.75)",
-                        }}
-                      >
-                        <HeroMedia screen={screen} />
-                      </figure>
-                    ))}
-                  </div>
-                ))}
+              <div
+                ref={marqueeRef}
+                tabIndex={reducedMotion ? 0 : undefined}
+                role="region"
+                aria-label={
+                  reducedMotion
+                    ? "Project previews. Scroll to see every image."
+                    : "Project previews"
+                }
+                className="overflow-hidden motion-reduce:overflow-x-auto focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
+              >
+                <div className="marquee-track flex w-max" data-paused={!marqueeActive}>
+                  {[false, true].map((isDuplicate) => (
+                    <div
+                      key={isDuplicate ? "clone" : "original"}
+                      className={`flex items-center gap-3.5 pr-3.5 ${isDuplicate ? "motion-reduce:hidden" : ""}`}
+                      aria-hidden={isDuplicate || undefined}
+                    >
+                      {heroScreens.map((screen) => (
+                        <figure
+                          key={screen.title}
+                          className={`relative aspect-[16/10] w-[76vw] max-w-[320px] shrink-0 overflow-hidden rounded-2xl bg-[#09090b] transition-all duration-300 ${
+                            screen.isDark
+                              ? "border border-white/25 ring-1 ring-white/15"
+                              : "ring-1 ring-white/15"
+                          }`}
+                          style={{
+                            boxShadow: screen.isDark
+                              ? "0 0 22px -2px rgba(255,255,255,0.12), 0 20px 48px -10px rgba(0,0,0,0.85)"
+                              : "0 24px 60px -12px rgba(0,0,0,0.75)",
+                          }}
+                        >
+                          <HeroMedia screen={screen} duplicate={isDuplicate} />
+                        </figure>
+                      ))}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </motion.div>
@@ -173,7 +190,7 @@ export const Hero = () => {
 
         <motion.div
           className="relative z-20 mt-[clamp(1rem,3svh,2rem)] grid gap-6 border-t border-white/12 pt-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end"
-          initial={{ opacity: 0, y: 24 }}
+          initial={import.meta.env.SSR ? false : { opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.62, duration: 0.58, ease: [0.16, 1, 0.3, 1] }}
         >

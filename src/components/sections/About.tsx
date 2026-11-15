@@ -13,7 +13,7 @@ export const About = () => {
       <div className="relative z-10 mx-auto max-w-7xl">
         <motion.div
           className="border-y border-white/[0.08] py-2"
-          initial={{ opacity: 0, y: 16 }}
+          initial={import.meta.env.SSR ? false : { opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.4 }}
           transition={{ duration: 0.5 }}
@@ -22,7 +22,7 @@ export const About = () => {
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className="flex items-center justify-start gap-2.5 px-6 py-4 md:justify-center"
+                className="flex flex-wrap items-center justify-start gap-2.5 px-6 py-4 md:justify-center"
               >
                 <span className="text-sm font-semibold text-white tracking-tight">
                   {stat.title}
@@ -35,7 +35,7 @@ export const About = () => {
 
         <motion.div
           className="mt-6 text-center"
-          initial={{ opacity: 0 }}
+          initial={import.meta.env.SSR ? false : { opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}

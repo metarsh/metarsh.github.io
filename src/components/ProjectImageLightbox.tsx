@@ -6,6 +6,8 @@ import "yet-another-react-lightbox/plugins/thumbnails.css";
 
 export interface LightboxSlide {
   src: string;
+  width: number;
+  height: number;
   alt?: string;
 }
 

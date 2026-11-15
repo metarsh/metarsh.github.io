@@ -1,3 +1,4 @@
+import { scrollToSection } from "@/lib/scroll";
 import { portfolio } from "@/config/portfolio";
 import { Hero } from "@/components/sections/Hero";
 import { About } from "@/components/sections/About";
@@ -16,13 +17,18 @@ const Index = () => {
     <div className="min-h-screen bg-[#050505]">
       <a
         href="#main-content"
+        onClick={(event) => {
+          event.preventDefault();
+          scrollToSection("#main-content");
+        }}
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-zinc-950"
       >
         Skip to content
       </a>
+
       <BottomBlur height={88} />
       <Header />
-      <main id="main-content">
+      <main id="main-content" tabIndex={-1}>
         {portfolio.sections.hero.enabled && <Hero />}
         {portfolio.sections.about.enabled && <About />}
         {portfolio.sections.skills.enabled && <Skills />}

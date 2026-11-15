@@ -92,7 +92,9 @@ const CompanionCard = () => {
           {particles.map((p) => (
             <motion.span
               key={p.id}
-              initial={{ opacity: 0, scale: 0.3, y: 0, x: 0, rotate: 0 }}
+              initial={
+                import.meta.env.SSR ? false : { opacity: 0, scale: 0.3, y: 0, x: 0, rotate: 0 }
+              }
               animate={{
                 opacity: [0, 1, 1, 0],
                 scale: [0.3, 1.15, 0.9],
@@ -123,8 +125,8 @@ const CompanionCard = () => {
         <img
           src={assetUrl(portfolio.research.image)}
           alt={portfolio.research.imageAlt}
-          width={748}
-          height={748}
+          width={736}
+          height={736}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
           decoding="async"
@@ -146,9 +148,9 @@ export const Publications = () => {
     <section id="research" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative bg-[#050505]">
       <div className="max-w-7xl mx-auto">
         <SectionHeader align="center" className="mb-14" title={portfolio.sections.research.title} />
-        <div className="grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-10 items-start">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-10 items-start">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={import.meta.env.SSR ? false : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
@@ -156,12 +158,12 @@ export const Publications = () => {
             <CompanionCard />
           </motion.div>
 
-          <div className="flex flex-col gap-5">
+          <div className="min-w-0 flex flex-col gap-5">
             {publications.map((pub, i) => (
               <motion.article
                 key={pub.title}
                 className="rounded-2xl border border-white/10 bg-[#0b0b10] p-6 sm:p-7 transition-colors duration-200 hover:border-white/20"
-                initial={{ opacity: 0, y: 20 }}
+                initial={import.meta.env.SSR ? false : { opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.55, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
@@ -175,7 +177,7 @@ export const Publications = () => {
                   </span>
                 </div>
 
-                <h3 className="mt-3 text-xl sm:text-2xl font-semibold tracking-tight text-white font-sans">
+                <h3 className="mt-3 break-words text-xl sm:text-2xl font-semibold tracking-tight text-white font-sans">
                   {pub.title}
                 </h3>
                 <p className="mt-2.5 text-sm leading-relaxed text-zinc-300 font-sans">

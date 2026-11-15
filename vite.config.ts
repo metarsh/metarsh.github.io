@@ -31,6 +31,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: sitePortfolio.site.basePath,
+    define: { __PORTFOLIO_SITE__: JSON.stringify(sitePortfolio.site) },
     plugins: [react(), tailwindcss(), portfolioSite(sitePortfolio)],
     resolve: {
       alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },

@@ -18,10 +18,17 @@ const currentYear = new Date().getFullYear();
 export const Contact = () => {
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [error, setError] = useState<string | null>(null);
+  const mountedRef = useRef(false);
   const requestRef = useRef<AbortController | null>(null);
   const isSubmitting = status === "submitting";
 
-  useEffect(() => () => requestRef.current?.abort(), []);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      requestRef.current?.abort();
+    };
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -38,6 +45,10 @@ export const Contact = () => {
     }
     const controller = new AbortController();
     requestRef.current = controller;
+    const deadline = setTimeout(
+      () => controller.abort(new DOMException("Request timed out", "TimeoutError")),
+      20000,
+    );
     setStatus("submitting");
     setError(null);
 
@@ -51,8 +62,11 @@ export const Contact = () => {
         recaptchaSiteKey &&
         (formEndpoint === templateFormEndpoint || recaptchaSiteKey !== templateRecaptchaSiteKey)
       ) {
-        formData.set("g-recaptcha-response", await recaptchaToken(recaptchaSiteKey));
-        if (controller.signal.aborted) return;
+        formData.set(
+          "g-recaptcha-response",
+          await recaptchaToken(recaptchaSiteKey, controller.signal),
+        );
+        if (controller.signal.aborted) throw controller.signal.reason;
       }
       const response = await fetch(portfolio.contact.formEndpoint, {
         method: "POST",
@@ -63,30 +77,31 @@ export const Contact = () => {
         signal: controller.signal,
       });
 
-      const data: unknown = await response.json();
-      const result = typeof data === "object" && data !== null ? data : {};
-      if (controller.signal.aborted) return;
-
-      if (response.ok && "code" in result && result.code === 200) {
-        setStatus("success");
-        form.reset();
-      } else {
-        throw new Error(
-          "message" in result && typeof result.message === "string"
-            ? result.message
-            : "Could not send your message. Please try again.",
-        );
+      if (!response.ok || !response.headers.get("content-type")?.includes("application/json")) {
+        throw new Error("Could not send your message. Please try again or email me directly.");
       }
+      const data: unknown = await response.json();
+      if (controller.signal.aborted) throw controller.signal.reason;
+      if (typeof data !== "object" || data === null || !("code" in data) || data.code !== 200) {
+        throw new Error("Could not send your message. Please try again or email me directly.");
+      }
+      setStatus("success");
+      form.reset();
     } catch (error) {
-      if (!controller.signal.aborted) {
+      if (mountedRef.current) {
         setError(
-          error instanceof Error
-            ? error.message
-            : "Failed to send message. Please try again later.",
+          controller.signal.aborted && controller.signal.reason?.name === "TimeoutError"
+            ? "Sending took too long. Please try again or email me directly."
+            : error instanceof Error &&
+                !controller.signal.aborted &&
+                error.message.startsWith("Spam protection")
+              ? error.message
+              : "Could not send your message. Please try again or email me directly.",
         );
         setStatus("idle");
       }
     } finally {
+      clearTimeout(deadline);
       requestRef.current = null;
     }
   };
@@ -94,7 +109,7 @@ export const Contact = () => {
   return (
     <section
       id="contact"
-      className="py-14 sm:py-18 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-[#050505]"
+      className="pt-14 sm:pt-18 pb-[calc(88px+env(safe-area-inset-bottom))] px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-[#050505]"
     >
       <div className="max-w-7xl mx-auto relative z-10">
         <SectionHeader align="center" className="mb-10" title={portfolio.sections.contact.title} />
@@ -109,13 +124,13 @@ export const Contact = () => {
                   </h3>
                   <a
                     href={`mailto:${portfolio.profile.email}`}
-                    className="text-xs text-zinc-300 mt-0.5 font-sans hover:text-white"
+                    className="break-all text-xs text-zinc-300 mt-0.5 font-sans hover:text-white"
                   >
                     {portfolio.profile.email}
                   </a>
                 </div>
 
-                <div className="flex items-center justify-start sm:justify-end py-2">
+                <div className="flex min-w-0 items-center justify-start sm:justify-end py-2">
                   <SocialDock />
                 </div>
               </div>
@@ -126,6 +141,8 @@ export const Contact = () => {
                 <img
                   src={assetUrl(portfolio.contact.image)}
                   alt={portfolio.contact.imageAlt}
+                  width={626}
+                  height={626}
                   style={{ objectPosition: "center 52%" }}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   loading="lazy"
@@ -136,6 +153,10 @@ export const Contact = () => {
                   <img
                     src={assetUrl(portfolio.contact.ditherImage)}
                     alt=""
+                    width={626}
+                    height={626}
+                    loading="lazy"
+                    decoding="async"
                     style={{ objectPosition: "center 52%" }}
                     className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out group-hover:opacity-0 group-hover:scale-105"
                     aria-hidden="true"
@@ -185,10 +206,12 @@ export const Contact = () => {
               </div>
             ) : (
               <form
+                action={portfolio.contact.formEndpoint}
+                method="post"
                 onSubmit={handleSubmit}
                 aria-label="Contact form"
                 data-purpose="contact-form"
-                className="space-y-3 flex-1 flex flex-col"
+                className="contact-form space-y-3 flex-1 flex flex-col"
               >
                 <input type="hidden" name="_gotcha" value="" />
                 <div>
@@ -201,7 +224,7 @@ export const Contact = () => {
                     autoComplete="name"
                     placeholder="Your name"
                     required
-                    className="mt-1 bg-black/40 border-white/10 focus-visible:border-white/30 h-10 rounded-xl text-sm text-zinc-100 placeholder:text-muted-foreground"
+                    className="mt-1 bg-black/40 border-white/10 focus-visible:border-white/30 h-10 rounded-xl text-base md:text-sm text-zinc-100 placeholder:text-muted-foreground"
                   />
                 </div>
                 <div>
@@ -216,7 +239,7 @@ export const Contact = () => {
                     spellCheck={false}
                     placeholder="you@email.com"
                     required
-                    className="mt-1 bg-black/40 border-white/10 focus-visible:border-white/30 h-10 rounded-xl text-sm text-zinc-100 placeholder:text-muted-foreground"
+                    className="mt-1 bg-black/40 border-white/10 focus-visible:border-white/30 h-10 rounded-xl text-base md:text-sm text-zinc-100 placeholder:text-muted-foreground"
                   />
                 </div>
                 <div>
@@ -228,7 +251,7 @@ export const Contact = () => {
                     name="project"
                     autoComplete="off"
                     placeholder="Your project"
-                    className="mt-1 bg-black/40 border-white/10 focus-visible:border-white/30 h-10 rounded-xl text-sm text-zinc-100 placeholder:text-muted-foreground"
+                    className="mt-1 bg-black/40 border-white/10 focus-visible:border-white/30 h-10 rounded-xl text-base md:text-sm text-zinc-100 placeholder:text-muted-foreground"
                   />
                 </div>
                 <div className="flex-1 flex flex-col min-h-0">
@@ -241,12 +264,18 @@ export const Contact = () => {
                     required
                     placeholder="Tell me about what you're working on, an idea, or just say hi..."
                     rows={3}
-                    className="mt-1 bg-black/40 border-white/10 focus-visible:border-white/30 resize-none rounded-xl text-sm text-zinc-100 placeholder:text-muted-foreground flex-1 min-h-[75px]"
+                    className="mt-1 bg-black/40 border-white/10 focus-visible:border-white/30 resize-y rounded-xl text-base md:text-sm text-zinc-100 placeholder:text-muted-foreground flex-auto min-h-[75px]"
                   />
                 </div>
                 {error && (
                   <p className="text-red-400 text-xs" role="alert">
-                    {error}
+                    {error}{" "}
+                    <a
+                      href={`mailto:${portfolio.profile.email}`}
+                      className="underline underline-offset-4"
+                    >
+                      Email {portfolio.profile.name}
+                    </a>
                   </p>
                 )}
                 <Button

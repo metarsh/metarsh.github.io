@@ -1,9 +1,10 @@
 import { ExternalLink } from "lucide-react";
 import { portfolio } from "@/config/portfolio";
 
-import { motion, useMotionValue, useAnimationFrame, useReducedMotion } from "framer-motion";
+import { motion, useMotionValue, useReducedMotion } from "framer-motion";
 import { useMemo, useRef, useState, useEffect } from "react";
 import { SectionHeader } from "@/components/SectionHeader";
+import { useVisibleActivity } from "@/hooks/useVisibleActivity";
 
 const credentials = portfolio.credentials;
 
@@ -21,10 +22,12 @@ const getResultStyle = (result?: string) =>
 export const Certificates = () => {
   const [width, setWidth] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [isInView, setIsInView] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const isActive = useVisibleActivity(carouselRef);
   const [activeFilter, setActiveFilter] = useState<string>("All");
   const prefersReducedMotion = useReducedMotion();
 
@@ -43,45 +46,45 @@ export const Certificates = () => {
 
   useEffect(() => {
     const carousel = carouselRef.current;
-    if (!carousel) return;
+    const track = trackRef.current;
+    if (!carousel || !track) return;
 
     const updateWidth = () => {
-      setWidth(Math.max(0, carousel.scrollWidth - carousel.offsetWidth));
+      const nextWidth = Math.max(0, track.offsetWidth - carousel.clientWidth);
+      setWidth(nextWidth);
+      const nextX = Math.max(-nextWidth, Math.min(0, x.get()));
+      if (nextX !== x.get()) {
+        x.stop();
+        setIsDragging(false);
+        x.set(nextX);
+      }
     };
 
     updateWidth();
 
     const resizeObserver = new ResizeObserver(updateWidth);
     resizeObserver.observe(carousel);
+    resizeObserver.observe(track);
 
     return () => resizeObserver.disconnect();
-  }, [displayed]);
+  }, [displayed, x]);
 
   useEffect(() => {
-    const carousel = carouselRef.current;
-    if (!carousel) return;
+    if (prefersReducedMotion || !isActive || isDragging || isHovered || isFocused || width <= 0)
+      return;
 
-    const observer = new IntersectionObserver(([entry]) => setIsInView(entry.isIntersecting), {
-      rootMargin: "120px",
-    });
-
-    observer.observe(carousel);
-
-    return () => observer.disconnect();
-  }, []);
-
-  useAnimationFrame((_t, delta) => {
-    if (!prefersReducedMotion && isInView && !isDragging && !isHovered && width > 0) {
-      const moveBy = -0.5 * (delta / 16); // Speed adjustment
-      let newX = x.get() + moveBy;
-
-      if (newX <= -width) {
-        newX = 0; // Reset to start for continuous feel
-      }
-
-      x.set(newX);
-    }
-  });
+    let previous: number | null = null;
+    let frame: number;
+    const advance = (time: number) => {
+      const delta = previous === null ? 16 : Math.min(time - previous, 64);
+      previous = time;
+      const nextX = x.get() - 0.5 * (delta / 16);
+      x.set(nextX <= -width ? 0 : nextX);
+      frame = requestAnimationFrame(advance);
+    };
+    frame = requestAnimationFrame(advance);
+    return () => cancelAnimationFrame(frame);
+  }, [prefersReducedMotion, isActive, isDragging, isHovered, isFocused, width, x]);
 
   const summaryStats = useMemo(() => {
     const categoryCounts = credentials.reduce(
@@ -136,6 +139,8 @@ export const Certificates = () => {
                   type="button"
                   onClick={() => {
                     setActiveFilter("All");
+                    x.stop();
+                    setIsDragging(false);
                     x.set(0);
                   }}
                   className="inline-flex items-center gap-1.5 text-xs text-amber-300 hover:text-amber-200 transition-colors font-sans px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10"
@@ -162,6 +167,8 @@ export const Certificates = () => {
                   type="button"
                   onClick={() => {
                     setActiveFilter(isSelected ? "All" : stat.label);
+                    x.stop();
+                    setIsDragging(false);
                     x.set(0);
                   }}
                   aria-pressed={isSelected}
@@ -193,7 +200,7 @@ export const Certificates = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-lg focus-within:outline-2 focus-within:outline-white focus-within:outline-offset-2">
         <div
           className="relative w-full cursor-grab active:cursor-grabbing overflow-hidden py-6 [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)]"
           ref={carouselRef}
@@ -202,6 +209,8 @@ export const Certificates = () => {
           onKeyDown={(event) => {
             if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
             event.preventDefault();
+            x.stop();
+            setIsDragging(false);
             x.set(
               Math.max(-width, Math.min(0, x.get() + (event.key === "ArrowLeft" ? 300 : -300))),
             );
@@ -209,16 +218,19 @@ export const Certificates = () => {
           aria-label="Credentials carousel. Use left and right arrow keys to scroll."
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          onFocus={() => setIsHovered(true)}
-          onBlur={() => setIsHovered(false)}
+          onFocusCapture={() => setIsFocused(true)}
+          onBlurCapture={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget)) setIsFocused(false);
+          }}
         >
           <motion.div
+            ref={trackRef}
             className="flex gap-6 px-2 w-max"
             style={{ x }}
             drag="x"
             dragConstraints={{ right: 0, left: -width }}
             onDragStart={() => setIsDragging(true)}
-            onDragEnd={() => setIsDragging(false)}
+            onDragTransitionEnd={() => setIsDragging(false)}
             whileTap={{ cursor: "grabbing" }}
           >
             {displayed.map((credential, index) => {
@@ -227,7 +239,7 @@ export const Certificates = () => {
                 <motion.div
                   key={credentialKey}
                   className="relative flex"
-                  initial={{ opacity: 0, x: 50 }}
+                  initial={import.meta.env.SSR ? false : { opacity: 0, x: 50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: Math.min(index, 8) * 0.05, duration: 0.5 }}

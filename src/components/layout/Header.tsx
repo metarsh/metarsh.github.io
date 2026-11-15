@@ -6,13 +6,25 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const navItems = portfolio.navigation.filter((item) => portfolio.sections[item.section].enabled);
+const mobileNavItems =
+  portfolio.sections.contact.enabled && !navItems.some((item) => item.section === "contact")
+    ? [...navItems, { label: "Contact", href: "#contact", section: "contact" as const }]
+    : navItems;
+const navHref = (href: string) =>
+  href.startsWith("#")
+    ? `${import.meta.env.BASE_URL}${href}`
+    : href.startsWith("/")
+      ? `${import.meta.env.BASE_URL}${href.slice(1)}`
+      : href;
 
 export const Header = () => {
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
+  const [focusWithin, setFocusWithin] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -22,6 +34,18 @@ export const Header = () => {
   const mobileMenuId = "mobile-navigation";
   const menuRef = useRef<HTMLDivElement>(null);
   useDialogFocus({ ref: menuRef, open: mobileMenuOpen, onClose: () => setMobileMenuOpen(false) });
+
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 48rem)");
+    const closeOnDesktop = () => {
+      if (desktop.matches) {
+        setMobileMenuOpen(false);
+        setHidden(false);
+      }
+    };
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, []);
 
   useEffect(() => {
     if (location.pathname !== "/") return;
@@ -61,7 +85,7 @@ export const Header = () => {
 
     if (latest <= 60) {
       setHidden(false);
-    } else if (Math.abs(diff) > 8 && !mobileMenuOpen) {
+    } else if (Math.abs(diff) > 8 && !mobileMenuOpen && !focusWithin) {
       if (diff > 0 && latest > 120) {
         setHidden(true);
       } else if (diff < 0) {
@@ -72,34 +96,36 @@ export const Header = () => {
   });
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     if (!href.startsWith("#") && !href.startsWith("/")) return;
     e.preventDefault();
     setMobileMenuOpen(false);
-
-    if (href.startsWith("/")) {
-      navigate(href);
-      window.scrollTo(0, 0);
-      return;
-    }
-
-    if (location.pathname !== "/") {
-      navigate("/");
-      requestAnimationFrame(() => scrollToSection(href));
+    setHidden(false);
+    if (href.startsWith("#")) {
+      navigate({ pathname: "/", hash: href });
+      if (location.pathname === "/") requestAnimationFrame(() => scrollToSection(href));
     } else {
-      scrollToSection(href);
+      navigate(href);
     }
   };
 
-  return (
+  const navigation = (
     <>
       <motion.header
         variants={{
           visible: { y: 0, opacity: 1, scale: 1 },
           hidden: { y: "180%", opacity: 0, scale: 0.96 },
         }}
-        animate={hidden ? "hidden" : "visible"}
+        animate={hidden && !focusWithin && !mobileMenuOpen ? "hidden" : "visible"}
+        onFocusCapture={() => {
+          setFocusWithin(true);
+          setHidden(false);
+        }}
+        onBlurCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setFocusWithin(false);
+        }}
         transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed bottom-0 inset-x-0 z-50 flex justify-center pointer-events-none px-4 pb-[calc(0.875rem+env(safe-area-inset-bottom))] sm:pb-[calc(1.25rem+env(safe-area-inset-bottom))]"
+        className="portfolio-navigation fixed bottom-0 inset-x-0 z-50 flex justify-center pointer-events-none px-4 pb-[calc(0.875rem+env(safe-area-inset-bottom))] sm:pb-[calc(1.25rem+env(safe-area-inset-bottom))]"
       >
         <div
           className={cn(
@@ -110,7 +136,7 @@ export const Header = () => {
           )}
         >
           <a
-            href="#hero"
+            href={navHref("#hero")}
             onClick={(e) => handleNavClick(e, "#hero")}
             className="col-start-1 justify-self-start flex items-center gap-2 group relative z-50"
             aria-label={`${portfolio.profile.name} home`}
@@ -138,7 +164,7 @@ export const Header = () => {
               return (
                 <a
                   key={item.label}
-                  href={item.href}
+                  href={navHref(item.href)}
                   onClick={(e) => handleNavClick(e, item.href)}
                   aria-current={
                     isActive ? (item.href.startsWith("/") ? "page" : "true") : undefined
@@ -175,7 +201,7 @@ export const Header = () => {
                     : "bg-white text-zinc-950 hover:bg-zinc-200",
                 )}
               >
-                <a href="#contact" onClick={(e) => handleNavClick(e, "#contact")}>
+                <a href={navHref("#contact")} onClick={(e) => handleNavClick(e, "#contact")}>
                   Let's Talk
                 </a>
               </Button>
@@ -212,22 +238,20 @@ export const Header = () => {
         {mobileMenuOpen && (
           <motion.div
             id={mobileMenuId}
-            ref={menuRef}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Navigation menu"
-            tabIndex={-1}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-zinc-950 pt-16 pb-28 px-6 md:hidden flex flex-col items-center gap-8"
+            className="fixed inset-0 z-40 bg-zinc-950 overflow-y-auto overscroll-contain px-6 pt-[calc(4rem+env(safe-area-inset-top))] pb-[calc(7rem+env(safe-area-inset-bottom))] md:hidden flex flex-col items-center gap-8"
+            onClick={(event) => {
+              if (event.target === event.currentTarget) setMobileMenuOpen(false);
+            }}
           >
             <nav
-              className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto"
+              className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto shrink-0"
               aria-label="Mobile navigation"
             >
-              {navItems.map((item, idx) => {
+              {mobileNavItems.map((item, idx) => {
                 const isActive =
                   item.href === activeSection ||
                   (item.href === "#hero" && activeSection === "#hero") ||
@@ -239,7 +263,7 @@ export const Header = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 + idx * 0.05 }}
-                    href={item.href}
+                    href={navHref(item.href)}
                     onClick={(e) => handleNavClick(e, item.href)}
                     aria-current={
                       isActive ? (item.href.startsWith("/") ? "page" : "true") : undefined
@@ -261,7 +285,7 @@ export const Header = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="mt-auto mb-12 flex flex-col items-center gap-4 text-muted-foreground text-sm"
+              className="mt-auto mb-12 flex flex-col items-center gap-4 text-muted-foreground text-sm shrink-0"
             >
               <p>{portfolio.profile.availability}</p>
             </motion.div>
@@ -270,4 +294,20 @@ export const Header = () => {
       </AnimatePresence>
     </>
   );
+
+  return import.meta.env.SSR
+    ? navigation
+    : createPortal(
+        <div
+          data-modal-root
+          ref={menuRef}
+          role={mobileMenuOpen ? "dialog" : undefined}
+          aria-modal={mobileMenuOpen ? true : undefined}
+          aria-label={mobileMenuOpen ? "Navigation menu" : undefined}
+          tabIndex={mobileMenuOpen ? -1 : undefined}
+        >
+          {navigation}
+        </div>,
+        document.body,
+      );
 };

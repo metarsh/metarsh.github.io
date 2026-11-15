@@ -7,13 +7,18 @@ type DialogFocusOptions = {
   suspended?: boolean;
 };
 
-/** Trap keyboard focus and restore it to the opener when an overlay closes. */
+/** Focus a body-level overlay, exclude its background, and restore its opener. */
 export const useDialogFocus = ({ ref, open, onClose, suspended = false }: DialogFocusOptions) => {
   const closeRef = useRef(onClose);
   const suspendedRef = useRef(suspended);
+  const nestedOpenerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     closeRef.current = onClose;
+    if (suspended && !suspendedRef.current)
+      nestedOpenerRef.current =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    if (!suspended && suspendedRef.current) nestedOpenerRef.current?.focus();
     suspendedRef.current = suspended;
   }, [onClose, suspended]);
 
@@ -30,6 +35,33 @@ export const useDialogFocus = ({ ref, open, onClose, suspended = false }: Dialog
         ),
       ).filter((element) => element.getClientRects().length > 0);
 
+    const overlay = dialog.closest("[data-modal-root]");
+    const background = Array.from(document.body.children)
+      .filter(
+        (element): element is HTMLElement =>
+          element instanceof HTMLElement &&
+          element !== overlay &&
+          !["SCRIPT", "STYLE", "LINK"].includes(element.tagName),
+      )
+      .map((element) => ({ element, inert: element.getAttribute("inert") }));
+    background.forEach(({ element }) => {
+      element.setAttribute("inert", "true");
+    });
+    const observer = new MutationObserver((records) => {
+      if (suspendedRef.current) return;
+      for (const record of records)
+        for (const node of record.addedNodes) {
+          if (
+            !(node instanceof HTMLElement) ||
+            node === overlay ||
+            ["SCRIPT", "STYLE", "LINK"].includes(node.tagName)
+          )
+            continue;
+          background.push({ element: node, inert: node.getAttribute("inert") });
+          node.setAttribute("inert", "true");
+        }
+    });
+    observer.observe(document.body, { childList: true });
     document.body.style.overflow = "hidden";
     (focusableElements()[0] ?? dialog).focus();
 
@@ -53,8 +85,14 @@ export const useDialogFocus = ({ ref, open, onClose, suspended = false }: Dialog
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
+      observer.disconnect();
+      background.forEach(({ element, inert }) => {
+        if (inert === null) element.removeAttribute("inert");
+        else element.setAttribute("inert", inert);
+      });
       document.body.style.overflow = previousOverflow;
-      if (opener?.isConnected) opener.focus();
+      if (opener?.isConnected && opener.getClientRects().length) opener.focus();
+      else document.querySelector<HTMLElement>("header a[href]")?.focus();
     };
   }, [open, ref]);
 };

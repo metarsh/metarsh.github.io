@@ -30,7 +30,7 @@ const ToolList = ({ tools }: { tools: StackTool[] }) => (
           className={LINK_CLASS}
         >
           <TechLogo name={tool.name} className="h-3.5 w-3.5 shrink-0 self-center" colored={false} />
-          <span className={NAME_CLASS}>{tool.name}</span>
+          <span className={`break-words ${NAME_CLASS}`}>{tool.name}</span>
         </a>
       </span>
     ))}
@@ -54,7 +54,7 @@ export const Skills = () => {
         <SectionHeader align="center" title={portfolio.sections.skills.title} />
 
         <motion.div
-          initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
+          initial={import.meta.env.SSR ? false : { opacity: 0, y: reduceMotion ? 0 : 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
