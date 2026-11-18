@@ -94,6 +94,7 @@ export type PortfolioConfig = {
     screens: HeroScreen[];
   };
   about: { stats: { title: string; label: string }[]; education: string };
+  technologyLogos?: Record<string, string>;
   skills: {
     machine: {
       host: string;

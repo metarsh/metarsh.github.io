@@ -3,7 +3,7 @@ import { portfolio } from "@/config/portfolio";
 
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { TechLogo } from "@/components/TechLogo";
+import { TechnologyTiles } from "@/components/TechnologyStack";
 
 export const InsightsTeaser = () => {
   return (
@@ -40,17 +40,7 @@ export const InsightsTeaser = () => {
             </p>
 
             <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/[0.07]">
-              <div className="flex flex-wrap gap-2">
-                {portfolio.insight.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 font-sans text-xs font-medium text-zinc-300"
-                  >
-                    <TechLogo name={tag} className="w-3.5 h-3.5 shrink-0" />
-                    <span>{tag}</span>
-                  </span>
-                ))}
-              </div>
+              <TechnologyTiles items={portfolio.insight.tags} />
               <Button
                 asChild
                 className="max-w-full whitespace-normal gap-2 bg-white/10 hover:bg-white/20 text-white border-0 font-sans"

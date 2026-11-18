@@ -8,7 +8,7 @@ import { lazy, Suspense, useState, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useDialogFocus } from "@/hooks/useDialogFocus";
 import type { LightboxSlide } from "@/components/ProjectImageLightbox";
-import { TechLogo } from "@/components/TechLogo";
+import { TechnologyStack } from "@/components/TechnologyStack";
 import { imageMetadata } from "virtual:portfolio-images";
 const ProjectImageLightbox = lazy(() =>
   import("@/components/ProjectImageLightbox").then((module) => ({
@@ -118,20 +118,10 @@ const ProjectDialog = ({ project, onClose }: { project: Project; onClose: () => 
               </div>
 
               <div>
-                <div className="text-xs font-sans font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                <h3 className="text-xs font-sans font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                   Tech Stack
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {project.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.04] border border-white/10 text-xs font-sans font-medium text-zinc-200"
-                    >
-                      <TechLogo name={tag} className="w-3.5 h-3.5 shrink-0" />
-                      <span>{tag}</span>
-                    </span>
-                  ))}
-                </div>
+                </h3>
+                <TechnologyStack items={project.tags} />
               </div>
 
               {(project.link || project.botLink || project.sourceLink) && (

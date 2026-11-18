@@ -160,6 +160,14 @@ export const portfolio: PortfolioConfig = {
     ],
     education: "cs @ graphic era ’27 · cgpa 8.16/10",
   },
+  technologyLogos: {
+    Docker: "/images/logos/docker.webp",
+    HuggingFace: "/images/logos/hugging-face.webp",
+    Pyrogram: "/images/logos/pyrogram.webp",
+    Python: "/images/logos/python.webp",
+    Telegram: "/images/logos/telegram.webp",
+    Telethon: "/images/logos/telethon.webp",
+  },
   skills: {
     machine: {
       host: "arsh@archlinux",
@@ -173,11 +181,11 @@ export const portfolio: PortfolioConfig = {
         },
         {
           key: "editor",
-          value: "Neovim · VS Code",
+          value: "VS Code",
         },
         {
           key: "runtime",
-          value: "Python 3.12 · Node 24",
+          value: "Python3 · Node",
         },
         {
           key: "uptime",

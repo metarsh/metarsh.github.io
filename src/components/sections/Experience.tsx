@@ -3,7 +3,7 @@ import { assetUrl } from "@/lib/assets";
 
 import { motion } from "framer-motion";
 import { SectionHeader } from "@/components/SectionHeader";
-import { TechLogo } from "@/components/TechLogo";
+import { TechnologyTiles } from "@/components/TechnologyStack";
 import { RichText } from "@/components/RichText";
 
 const experiences = portfolio.experiences;
@@ -42,16 +42,8 @@ export const Experience = () => {
         ))}
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2 pt-2 pb-2">
-        {experience.stack.map((item) => (
-          <span
-            key={item}
-            className="inline-flex max-w-full items-center gap-1.5 font-sans text-xs font-medium text-muted-foreground bg-white/[0.04] px-2.5 py-0.5 rounded-full hover:text-white transition-colors"
-          >
-            <TechLogo name={item} className="w-3.5 h-3.5 shrink-0" />
-            <span className="min-w-0 break-words">{item}</span>
-          </span>
-        ))}
+      <div className="mt-4">
+        <TechnologyTiles items={experience.stack} />
       </div>
     </motion.article>
   ));

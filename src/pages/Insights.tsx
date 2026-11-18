@@ -2,7 +2,7 @@ import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { TopBlur } from "@/components/layout/EdgeBlur";
-import { TechLogo } from "@/components/TechLogo";
+import { TechnologyTiles } from "@/components/TechnologyStack";
 import { EmiliaArticle } from "@/content/EmiliaArticle";
 import { portfolio } from "@/config/portfolio";
 import { assetUrl } from "@/lib/assets";
@@ -55,16 +55,7 @@ const Insights = () => {
                   <p className="text-xs text-muted-foreground font-sans">author & maintainer</p>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {insight.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.03] text-xs font-sans text-zinc-300 border border-white/10"
-                  >
-                    <TechLogo name={tag} className="w-3.5 h-3.5" /> {tag}
-                  </span>
-                ))}
-              </div>
+              <TechnologyTiles items={insight.tags} />
             </div>
           </header>
           <div className="space-y-6 text-base sm:text-lg leading-relaxed text-zinc-300">

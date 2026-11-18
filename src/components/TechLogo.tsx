@@ -36,14 +36,29 @@ import {
 } from "react-icons/si";
 import { TbBrandTwilio } from "react-icons/tb";
 import { GrOracle } from "react-icons/gr";
+import { portfolio } from "@/config/portfolio";
+import { assetUrl } from "@/lib/assets";
 
 type IconProps = { className?: string; style?: React.CSSProperties };
+
+const logoPaths = new Map(Object.entries(portfolio.technologyLogos ?? {}));
+
+const colorsOnLight = new Map([
+  ["#FFFFFF", "#242733"],
+  ["#61DAFB", "#087EA4"],
+  ["#47A248", "#28743A"],
+  ["#EE4C2C", "#CA4229"],
+  ["#8E75FF", "#704ADB"],
+  ["#F43F5E", "#BD2847"],
+  ["#A1A1AA", "#666874"],
+]);
 
 export const TechLogo: React.FC<{
   name: string;
   className?: string;
   colored?: boolean;
-}> = ({ name, className = "w-3.5 h-3.5", colored = true }) => {
+  onLight?: boolean;
+}> = ({ name, className = "w-3.5 h-3.5", colored = true, onLight = false }) => {
   const normalized = name.toLowerCase().trim();
   let IconComponent: ComponentType<IconProps> | null = null;
   let brandColor: string | undefined = undefined;
@@ -186,16 +201,30 @@ export const TechLogo: React.FC<{
     brandColor = "#A1A1AA";
   }
 
+  if (onLight && brandColor) brandColor = colorsOnLight.get(brandColor) ?? brandColor;
+  const lightAsset = onLight && colored ? logoPaths.get(name) : undefined;
+
   return (
     <span
       className={`inline-flex shrink-0 items-center justify-center ${className}`}
       aria-hidden="true"
     >
-      <IconComponent
-        className="w-full h-full"
-        style={colored && brandColor ? { color: brandColor } : undefined}
-        aria-hidden="true"
-      />
+      {lightAsset ? (
+        <img
+          src={assetUrl(lightAsset)}
+          alt=""
+          className="size-full object-contain"
+          width={96}
+          height={96}
+          decoding="async"
+        />
+      ) : (
+        <IconComponent
+          className="w-full h-full"
+          style={colored && brandColor ? { color: brandColor } : undefined}
+          aria-hidden="true"
+        />
+      )}
     </span>
   );
 };
