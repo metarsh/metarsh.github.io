@@ -6,11 +6,43 @@ import { imageMetadata } from "virtual:portfolio-images";
 import type { HeroScreen } from "@/types/portfolio";
 import { Button } from "@/components/ui/button";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useVisibleActivity } from "@/hooks/useVisibleActivity";
 import { BlackCatSticker } from "stick-it-up";
 
 const { proofPoints, screens: heroScreens } = portfolio.hero;
+
+const HeroCat = () => {
+  const [pets, setPets] = useState(0);
+
+  return (
+    <span className="hero-cat absolute -bottom-1 right-0 size-10 sm:size-12 xl:size-16">
+      <BlackCatSticker
+        size={64}
+        peel
+        aria-hidden="true"
+        focusable="false"
+        className="size-full -rotate-12 align-top cursor-default! motion-reduce:transform-none! motion-reduce:transition-none!"
+      />
+      {portfolio.pet.enabled && (
+        <span className="md:pointer-fine:motion-safe:hidden">
+          <button
+            type="button"
+            aria-label="Pet the cat"
+            onClick={() => setPets((count) => count + 1)}
+            className="absolute inset-0 size-full min-h-11 min-w-11 cursor-pointer rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          />
+          <span
+            role="status"
+            className="pointer-events-none absolute top-full right-0 whitespace-nowrap font-caveat text-base leading-none text-zinc-200"
+          >
+            {pets === 0 ? "try to pet" : pets % 2 === 1 ? "purr~" : "♥"}
+          </span>
+        </span>
+      )}
+    </span>
+  );
+};
 
 const HeroMedia = ({ screen, duplicate = false }: { screen: HeroScreen; duplicate?: boolean }) => {
   const cls =
@@ -76,12 +108,13 @@ export const Hero = () => {
             className="relative z-20 min-w-0 xl:self-center xl:flex xl:flex-col xl:justify-center"
             style={{ y: reducedMotion ? "0%" : typeY }}
           >
-            <h1 className="hero-name font-marker text-[clamp(3rem,5.5vw,5rem)] leading-[1.38] tracking-[0.01em] text-white -rotate-1 select-none origin-left mb-2 overflow-visible py-2 pr-4 max-md:pr-0 max-md:origin-center max-md:text-center">
-              <span className="sr-only">{portfolio.profile.name}</span>
+            <h1
+              aria-label={portfolio.profile.name}
+              className="hero-name font-marker text-[clamp(3rem,5.5vw,5rem)] leading-[1.38] tracking-[0.01em] text-white -rotate-1 select-none origin-left mb-2 overflow-visible py-2 pr-4 max-md:pr-0 max-md:origin-center max-md:text-center"
+            >
               {portfolio.profile.name.split(/\s+/).map((part, index, parts) => (
                 <span
                   key={index}
-                  aria-hidden="true"
                   className={
                     index === 0
                       ? "block overflow-visible"
@@ -90,18 +123,11 @@ export const Hero = () => {
                 >
                   {index === parts.length - 1 ? (
                     <span className="relative inline-block max-w-full pr-11 align-top sm:pr-14 xl:pr-[4.5rem]">
-                      {part.toUpperCase()}
-                      <span className="hero-cat absolute -bottom-1 right-0 size-10 sm:size-12 xl:size-16">
-                        <BlackCatSticker
-                          size={64}
-                          peel
-                          focusable="false"
-                          className="size-full -rotate-12 align-top cursor-default! motion-reduce:transform-none! motion-reduce:transition-none!"
-                        />
-                      </span>
+                      <span aria-hidden="true">{part.toUpperCase()}</span>
+                      <HeroCat />
                     </span>
                   ) : (
-                    part.toUpperCase()
+                    <span aria-hidden="true">{part.toUpperCase()}</span>
                   )}
                 </span>
               ))}

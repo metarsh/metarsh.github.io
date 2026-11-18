@@ -228,6 +228,12 @@
   .animate-pet-zzz {
     animation: pet-float-zzz 2.2s ease-out infinite;
   }
+
+  @keyframes terminal-caret {
+    50% {
+      opacity: 0;
+    }
+  }
 }
 
 /* Respect user preference for reduced motion */

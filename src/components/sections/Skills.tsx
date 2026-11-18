@@ -1,4 +1,5 @@
 import { motion, useReducedMotion } from "framer-motion";
+import type { KeyboardEvent } from "react";
 import { SectionHeader } from "@/components/SectionHeader";
 import { TechLogo } from "@/components/TechLogo";
 import { portfolio } from "@/config/portfolio";
@@ -15,6 +16,10 @@ const LINK_CLASS =
 
 const NAME_CLASS =
   "underline decoration-white/20 decoration-dotted underline-offset-4 group-hover:decoration-white/50";
+
+const ignoreSpace = (event: KeyboardEvent<HTMLElement>) => {
+  if (event.key === " ") event.preventDefault();
+};
 
 const ToolList = ({ tools }: { tools: StackTool[] }) => (
   <>
@@ -74,10 +79,6 @@ export const Skills = () => {
             <p className="break-words">
               <span className="text-muted-foreground">{promptLead}</span>
               <span className="text-zinc-200">{promptCommand}</span>
-              <span
-                className="ml-1 inline-block h-3.5 w-1.5 animate-pulse bg-zinc-400 align-middle"
-                aria-hidden="true"
-              />
             </p>
 
             <div className="mt-5 grid gap-6 sm:grid-cols-[auto_minmax(0,1fr)]">
@@ -137,6 +138,33 @@ export const Skills = () => {
               ))}
               <span className="h-4 w-8 rounded-sm" style={{ backgroundColor: "#e4e4e7" }} />
             </div>
+            <details className="mt-5 border-t border-white/10 pt-3">
+              <summary
+                onClick={(event) => {
+                  const { pointerType } = event.nativeEvent as PointerEvent;
+                  const mouseClick = pointerType
+                    ? pointerType === "mouse"
+                    : window.matchMedia("(hover: hover)").matches;
+                  if (event.detail > 0 && mouseClick) {
+                    event.preventDefault();
+                    event.currentTarget.focus();
+                  }
+                }}
+                onKeyDown={ignoreSpace}
+                onKeyUp={ignoreSpace}
+                className="group/command block w-full cursor-text list-none break-words text-zinc-300 hover:text-white outline-none focus-visible:underline focus-visible:decoration-zinc-300 focus-visible:underline-offset-4 [&::-webkit-details-marker]:hidden"
+              >
+                <span className="text-muted-foreground">{promptLead || `${machine.host}:~$`} </span>
+                <code>cat ~/about</code>
+                <span
+                  aria-hidden="true"
+                  className="invisible ml-1 inline-block h-3.5 w-1.5 bg-zinc-300 align-middle group-focus/command:visible motion-safe:group-focus/command:animate-[terminal-caret_1s_step-end_infinite]"
+                />
+              </summary>
+              <p className="mt-2 max-w-[62ch] border-l border-white/15 pl-4 text-zinc-300">
+                {machine.about}
+              </p>
+            </details>
           </div>
         </motion.div>
       </div>

@@ -3,6 +3,8 @@ import { assetUrl } from "@/lib/assets";
 import { useEffect, useRef } from "react";
 import { Oneko } from "lots-o-nekos";
 
+let petHint: "invite" | "dodged" | "petted" = "invite";
+
 /** A keyboard-accessible cat that stays beside the bottom navigation. */
 export const FloatingCat = () => {
   const catRef = useRef<Oneko | null>(null);
@@ -14,22 +16,21 @@ export const FloatingCat = () => {
 
     if (!supportsFinePointer || prefersReducedMotion || isMobile) return;
 
-    const getFloorY = () => Math.max(32, window.innerHeight - 20);
     const getBounds = () => {
       const w = window.innerWidth;
       const maxX = w - 36;
-      // The nav pill is centered and at most 672px wide (max-w-2xl), so its right
-      // edge sits at most at w / 2 + 336. Stroll clear of it, on the right.
-      let minX = Math.max(w / 2 + 356, w - 200);
-      // Guard: never let the range invert. At ~768px the pill spans nearly the whole
-      // viewport, so fall back to hugging the right edge rather than the pill.
-      if (minX >= maxX) minX = maxX - 40;
-      if (minX <= w / 2 + 336) minX = Math.min(maxX, w / 2 + 340);
-      return { minX, maxX, floorY: getFloorY() };
+      const besideNav = Math.max(w / 2 + 356, w - 200);
+      // Use the space above the dock when its right margin is too narrow for the skid.
+      const aboveNav = maxX - besideNav < 108;
+      return {
+        minX: aboveNav ? maxX - 140 : besideNav,
+        maxX,
+        floorY: Math.max(32, window.innerHeight - (aboveNav ? 90 : 20)),
+      };
     };
 
-    const { minX, maxX, floorY } = getBounds();
-    const initialX = Math.min(maxX, Math.max(minX, maxX - 24));
+    const { maxX, floorY } = getBounds();
+    const initialX = maxX - 18;
     const initialY = floorY;
 
     if (!catRef.current) {
@@ -54,12 +55,16 @@ export const FloatingCat = () => {
       return timer;
     };
     if (!cat.element) return;
+    const sprite = cat.element;
+    let dodge: Animation | undefined;
+    let jokeTimer: ReturnType<typeof setTimeout> | undefined;
+    let dust: HTMLDivElement | undefined;
 
     cat.element.style.pointerEvents = "auto";
     cat.element.style.cursor = "pointer";
     cat.element.style.zIndex = "40"; // Below modals (z-50) so it never obstructs reading
     cat.element.style.transition =
-      "transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease";
+      "transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease";
     cat.element.setAttribute("title", portfolio.pet.label);
     cat.element.removeAttribute("aria-hidden");
     cat.element.setAttribute("role", "button");
@@ -79,10 +84,17 @@ export const FloatingCat = () => {
     emoteContainer.style.alignItems = "center";
     document.body.appendChild(emoteContainer);
 
+    const hint = document.createElement("span");
+    hint.className =
+      "whitespace-nowrap text-center font-caveat text-lg leading-none text-zinc-200 drop-shadow-md after:block after:content-['↓']";
+    hint.textContent = petHint === "invite" ? "try to pet" : "maybe try again?";
+    hint.setAttribute("aria-hidden", "true");
+    if (petHint !== "petted") emoteContainer.appendChild(hint);
+
     const handleDraw = () => {
       emoteContainer.style.transform = `translate(${cat.x}px, ${cat.y - 14}px) translate(-50%, -100%)`;
 
-      const isSleeping = cat.idleAnimation === "sleeping";
+      const isSleeping = cat.idleAnimation === "sleeping" && !hint.isConnected;
       const existingZzz = emoteContainer.querySelector(".pet-zzz");
 
       if (isSleeping && !existingZzz) {
@@ -98,11 +110,46 @@ export const FloatingCat = () => {
 
     cat.addEventListener("draw", handleDraw);
 
+    const stopSliding = () => {
+      if (dodge) {
+        dodge.onfinish = null;
+        dodge.cancel();
+        dodge = undefined;
+      }
+      sprite.style.pointerEvents = "auto";
+    };
+
+    const endDodge = () => {
+      stopSliding();
+      dust?.remove();
+      dust = undefined;
+      if (jokeTimer !== undefined) {
+        clearTimeout(jokeTimer);
+        timers.delete(jokeTimer);
+        jokeTimer = undefined;
+      }
+    };
+
+    const showRetry = () => {
+      endDodge();
+      hint.textContent = "maybe try again?";
+      hint.hidden = false;
+    };
+
+    const handleFocus = () => {
+      if (dodge) showRetry();
+    };
+    sprite.addEventListener("focus", handleFocus);
+
     const triggerPetting = (e?: Event) => {
       if (e) {
         e.preventDefault();
         e.stopPropagation();
       }
+      endDodge();
+      petHint = "petted";
+      window.removeEventListener("pointermove", handleApproach);
+      hint.remove();
 
       if (cat.idleAnimation === "sleeping") {
         cat.resetIdleAnimation();
@@ -137,12 +184,78 @@ export const FloatingCat = () => {
     };
     cat.element.addEventListener("keydown", handleKeyDown);
 
-    const handleMouseEnter = () => {
-      if (cat.idleAnimation !== "sleeping") {
+    const handleApproach = (event: PointerEvent) => {
+      if (petHint !== "invite" || event.pointerType !== "mouse" || event.buttons) return;
+      const reach = cat.size / 2 + 10;
+      if (Math.abs(event.clientX - cat.x) > reach || Math.abs(event.clientY - cat.y) > reach)
+        return;
+      if (sprite.inert || sprite.matches(":focus-visible")) return;
+
+      petHint = "dodged";
+      window.removeEventListener("pointermove", handleApproach);
+      hint.hidden = true;
+      sprite.style.pointerEvents = "none";
+      cat.resetIdleAnimation();
+      cat.setTarget(cat.x, cat.y);
+      cat.setSprite("W", 0);
+      const { minX } = getBounds();
+      const landingX = Math.round(Math.max(minX, cat.x - 90));
+      const facingLeft = sprite.style.backgroundPosition;
+      dodge = sprite.animate(
+        [
+          { transform: "rotate(-7deg)", backgroundPosition: facingLeft },
+          { transform: `translateX(${landingX - cat.x}px)`, backgroundPosition: facingLeft },
+        ],
+        { duration: 380, easing: "cubic-bezier(0.25, 0.5, 0.4, 1)", fill: "forwards" },
+      );
+
+      const trail = document.createElement("div");
+      trail.className = "pointer-events-none fixed z-[41]";
+      trail.style.left = `${landingX + 15}px`;
+      trail.style.top = `${cat.y + 8}px`;
+      trail.setAttribute("aria-hidden", "true");
+      dust = document.body.appendChild(trail);
+      for (const small of [true, false]) {
+        const puff = document.createElement("span");
+        puff.className = `absolute rounded-full bg-white before:absolute before:rounded-full before:bg-white before:content-[''] ${
+          small
+            ? "left-6 h-1 w-3 before:bottom-0.5 before:left-0.5 before:size-1.5"
+            : "left-0 h-2 w-[18px] before:bottom-1 before:left-0.5 before:size-2.5 after:absolute after:bottom-0.5 after:right-0.5 after:size-2 after:rounded-full after:bg-white after:content-['']"
+        }`;
+        trail.appendChild(puff);
+        const drift = puff.animate(
+          [
+            { opacity: 0, transform: "translateX(22px) scale(0.65)" },
+            { opacity: 1, transform: "translate(12px, -2px) scale(1)", offset: 0.18 },
+            { opacity: 0.9, transform: "translate(3px, -4px) scale(1.05)", offset: 0.55 },
+            { opacity: 0, transform: "translate(10px, -12px) scale(1.25)" },
+          ],
+          { duration: small ? 390 : 520, delay: small ? 65 : 125, fill: "both" },
+        );
+        if (!small) drift.onfinish = () => trail.remove();
+      }
+
+      dodge.onfinish = () => {
+        cat.x = landingX;
+        cat.setTarget(landingX, cat.y);
+        cat.setSprite("alert", 0);
+        stopSliding();
+        hint.textContent = "lol";
+        hint.hidden = false;
+        jokeTimer = schedule(showRetry, 1500);
+      };
+    };
+
+    const handlePointerEnter = (event: PointerEvent) => {
+      handleApproach(event);
+      if (!dodge && cat.idleAnimation !== "sleeping") {
         cat.setSprite("alert", 0);
       }
     };
-    cat.element.addEventListener("mouseenter", handleMouseEnter);
+    if (petHint === "invite") {
+      window.addEventListener("pointermove", handleApproach, { passive: true });
+    }
+    cat.element.addEventListener("pointerenter", handlePointerEnter);
 
     const scheduleNextActivity = () => {
       const delay = 9000 + Math.random() * 11000;
@@ -151,8 +264,8 @@ export const FloatingCat = () => {
 
         // If a modal is open, keep the cat sleeping and quiet
         const isModalOpen = document.querySelector('[role="dialog"]') !== null;
-        if (isModalOpen) {
-          cat.idleAnimation = "sleeping";
+        if (isModalOpen || dodge || jokeTimer !== undefined) {
+          if (isModalOpen) cat.idleAnimation = "sleeping";
           scheduleNextActivity();
           return;
         }
@@ -160,7 +273,7 @@ export const FloatingCat = () => {
         const currentBounds = getBounds();
         const roll = Math.random();
 
-        if (roll < 0.45) {
+        if (roll < 0.45 && petHint !== "invite") {
           // Sideways stroll along the bottom floor
           const randomX =
             currentBounds.minX + Math.random() * (currentBounds.maxX - currentBounds.minX);
@@ -182,6 +295,7 @@ export const FloatingCat = () => {
     scheduleNextActivity();
 
     const handleResize = () => {
+      if (dodge) showRetry();
       const currentBounds = getBounds();
       if (window.innerWidth < 768) {
         if (cat.element) cat.element.style.display = "none";
@@ -192,7 +306,10 @@ export const FloatingCat = () => {
         emoteContainer.style.display = "flex";
       }
 
-      const clampedX = Math.min(Math.max(currentBounds.minX, cat.x), currentBounds.maxX);
+      const clampedX =
+        petHint === "invite"
+          ? currentBounds.maxX - 18
+          : Math.min(Math.max(currentBounds.minX, cat.x), currentBounds.maxX);
       cat.x = clampedX;
       cat.y = currentBounds.floorY;
       cat.setTarget(clampedX, currentBounds.floorY);
@@ -205,13 +322,16 @@ export const FloatingCat = () => {
     cat.idleAnimationFrame = 0;
 
     return () => {
+      endDodge();
       for (const timer of timers) clearTimeout(timer);
       cat.loopAnimating = false;
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("pointermove", handleApproach);
       cat.removeEventListener("draw", handleDraw);
+      sprite.removeEventListener("focus", handleFocus);
       cat.element?.removeEventListener("click", triggerPetting);
       cat.element?.removeEventListener("keydown", handleKeyDown);
-      cat.element?.removeEventListener("mouseenter", handleMouseEnter);
+      cat.element?.removeEventListener("pointerenter", handlePointerEnter);
       cat.element?.remove();
       emoteContainer.remove();
       catRef.current = null;

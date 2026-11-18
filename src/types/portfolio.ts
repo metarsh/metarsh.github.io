@@ -95,7 +95,12 @@ export type PortfolioConfig = {
   };
   about: { stats: { title: string; label: string }[]; education: string };
   skills: {
-    machine: { host: string; prompt: string; rows: { key: string; value: string }[] };
+    machine: {
+      host: string;
+      prompt: string;
+      about: string;
+      rows: { key: string; value: string }[];
+    };
     layers: StackLayer[];
     languages: StackTool[];
   };

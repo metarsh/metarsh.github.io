@@ -164,6 +164,8 @@ export const portfolio: PortfolioConfig = {
     machine: {
       host: "arsh@archlinux",
       prompt: "arsh@archlinux:~$ neofetch --stack",
+      about:
+        "I like building things. If your idea gets me sketching before I've even replied, I might work on it for free. Say hi. I don't bite. :p",
       rows: [
         {
           key: "os",
