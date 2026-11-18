@@ -130,7 +130,7 @@ const CompanionCard = () => {
           loading="lazy"
           decoding="async"
         />
-        <div className="absolute bottom-3 left-3 flex items-center">
+        <div className="absolute bottom-2 left-2 flex items-center lg:bottom-3 lg:left-3">
           <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-zinc-950/85 backdrop-blur-md border border-white/15 text-xs text-amber-300 font-sans tracking-wide font-medium shadow-lg">
             {portfolio.research.badge}
           </span>
@@ -146,9 +146,14 @@ export const Publications = () => {
   return (
     <section id="research" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative bg-[#050505]">
       <div className="max-w-7xl mx-auto">
-        <SectionHeader align="center" className="mb-14" title={portfolio.sections.research.title} />
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-10 items-start">
+        <SectionHeader
+          align="center"
+          className="mb-8 lg:mb-14"
+          title={portfolio.sections.research.title}
+        />
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-10">
           <motion.div
+            className="mx-auto w-full max-w-36 sm:max-w-40 lg:mx-0 lg:max-w-none"
             initial={import.meta.env.SSR ? false : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}

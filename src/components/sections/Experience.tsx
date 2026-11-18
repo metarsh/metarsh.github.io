@@ -56,17 +56,17 @@ export const Experience = () => {
       <div className="mx-auto max-w-7xl relative z-10">
         <SectionHeader
           align="center"
-          className="mb-16"
+          className="mb-8 lg:mb-16"
           title={portfolio.sections.experience.title}
         />
-        <div className="grid grid-cols-1 gap-10 lg:gap-14 lg:grid-cols-[minmax(260px,360px)_1fr] items-start">
-          <div className="order-1 lg:order-none w-full max-w-[280px] sm:max-w-[340px] lg:max-w-none mx-auto aspect-[9/16] lg:aspect-auto lg:h-[520px] xl:h-[560px] overflow-hidden rounded-2xl border border-white/10 shadow-2xl lg:sticky lg:top-24 bg-[#09090b]">
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(260px,360px)_1fr] lg:gap-14">
+          <div className="order-1 mx-auto aspect-[4/3] w-full max-w-44 overflow-hidden rounded-xl border border-white/10 bg-[#09090b] shadow-2xl sm:max-w-48 lg:sticky lg:top-24 lg:order-none lg:aspect-auto lg:h-[520px] lg:max-w-none lg:rounded-2xl xl:h-[560px]">
             <img
               src={assetUrl(portfolio.experience.image)}
               alt={portfolio.experience.imageAlt}
               width={576}
               height={1024}
-              className="w-full h-full object-cover object-top"
+              className="h-full w-full object-cover object-[center_20%] lg:object-top"
               loading="lazy"
               decoding="async"
             />
