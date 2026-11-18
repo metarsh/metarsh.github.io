@@ -184,7 +184,7 @@ export const Contact = () => {
                   />
                 )}
               </div>
-              {(
+              {
                 <FishSticker
                   size={56}
                   peel
@@ -192,7 +192,7 @@ export const Contact = () => {
                   focusable="false"
                   className="absolute -top-2 right-3 z-20 size-11 rotate-12 cursor-default! motion-reduce:transform-none! motion-reduce:transition-none! sm:size-14"
                 />
-              )}
+              }
             </Card>
           </div>
 
