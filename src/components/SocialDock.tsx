@@ -91,68 +91,67 @@ const DockIcon = ({ item, register, reducedMotion }: DockIconProps) => {
 
   if (item.id === "email") {
     return (
-      <motion.button
-        ref={setRef}
-        type="button"
-        onClick={handleClick}
-        style={{
-          width: reducedMotion ? 40 : size,
-          height: reducedMotion ? 40 : size,
-          y: reducedMotion ? 0 : y,
-        }}
-        aria-label={copied ? "Email copied to clipboard!" : "Copy email address"}
-        title={copied ? "Copied!" : `Click to copy email (${item.href.replace(/^mailto:/, "")})`}
-        className={`group relative flex items-center justify-center rounded-full border transition-colors shadow-lg cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white shrink-0 ${
-          copied
-            ? "bg-emerald-500/20 border-emerald-400/50 text-emerald-300 shadow-emerald-900/30"
-            : "bg-white/[0.04] border-white/10 text-zinc-300 hover:text-white hover:bg-white/[0.09] hover:border-white/25"
-        }`}
-      >
-        <motion.div
-          style={{ width: 18, height: 18, scale: reducedMotion ? 1 : iconScale }}
-          className="flex items-center justify-center pointer-events-none"
+      <>
+        <motion.button
+          ref={setRef}
+          type="button"
+          onClick={handleClick}
+          style={{
+            width: reducedMotion ? 40 : size,
+            height: reducedMotion ? 40 : size,
+            y: reducedMotion ? 0 : y,
+          }}
+          aria-label={copied ? "Email copied to clipboard!" : "Copy email address"}
+          title={copied ? "Copied!" : `Click to copy email (${item.href.replace(/^mailto:/, "")})`}
+          className={`group relative flex items-center justify-center rounded-full border transition-[color,background-color,border-color,translate] duration-150 motion-safe:active:translate-y-0.5 shadow-lg cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white shrink-0 ${
+            copied
+              ? "bg-emerald-500/20 border-emerald-400/50 text-emerald-300 shadow-emerald-900/30"
+              : "bg-white/[0.04] border-white/10 text-zinc-300 hover:text-white hover:bg-white/[0.09] hover:border-white/25"
+          }`}
         >
-          <AnimatePresence mode="wait">
-            {copied ? (
-              <motion.div
-                key="check"
-                initial={{ scale: 0.5, rotate: -30, opacity: 0 }}
-                animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                exit={{ scale: 0.5, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 450, damping: 20 }}
+          <motion.div
+            style={{ width: 18, height: 18, scale: reducedMotion ? 1 : iconScale }}
+            className="relative pointer-events-none"
+          >
+            <AnimatePresence initial={false}>
+              <motion.span
+                key={copied ? "check" : "mail"}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.12 }}
+                className="absolute inset-0"
+                aria-hidden="true"
               >
-                <Check className="w-full h-full text-emerald-300 stroke-[2.5]" />
-              </motion.div>
-            ) : (
+                {copied ? (
+                  <Check className="size-full stroke-[2.5]" />
+                ) : (
+                  <Icon className="size-full" />
+                )}
+              </motion.span>
+            </AnimatePresence>
+          </motion.div>
+
+          <AnimatePresence>
+            {copied && (
               <motion.div
-                key="mail"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ duration: 0.15 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.12 }}
+                aria-hidden="true"
+                className="absolute bottom-full mb-2 pointer-events-none px-2.5 py-1 rounded-md bg-zinc-900/95 border border-emerald-400/30 text-xs font-sans font-medium text-emerald-300 shadow-xl z-50 whitespace-nowrap"
               >
-                <Icon className="w-full h-full transition-colors" aria-hidden="true" />
+                Copied!
+                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900/95" />
               </motion.div>
             )}
           </AnimatePresence>
-        </motion.div>
-
-        <AnimatePresence>
-          {copied && (
-            <motion.div
-              initial={{ opacity: 0, y: -2, scale: 0.85 }}
-              animate={{ opacity: 1, y: -38, scale: 1 }}
-              exit={{ opacity: 0, y: -30, scale: 0.85 }}
-              transition={{ type: "spring", stiffness: 350, damping: 22 }}
-              className="absolute pointer-events-none px-2.5 py-1 rounded-md bg-zinc-900/95 border border-emerald-400/30 text-xs font-sans font-medium text-emerald-300 shadow-xl flex items-center gap-1 z-50 whitespace-nowrap backdrop-blur-md"
-            >
-              <Check className="w-3 h-3 text-emerald-300 stroke-[2.5]" />
-              <span>Copied!</span>
-              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900/95" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.button>
+        </motion.button>
+        <span role="status" className="sr-only">
+          {copied ? "Email copied to clipboard" : ""}
+        </span>
+      </>
     );
   }
 

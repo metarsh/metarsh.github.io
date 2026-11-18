@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { useVisibleActivity } from "@/hooks/useVisibleActivity";
+import { BlackCatSticker } from "stick-it-up";
 
 const { proofPoints, screens: heroScreens } = portfolio.hero;
 
@@ -33,16 +34,11 @@ const HeroMedia = ({ screen, duplicate = false }: { screen: HeroScreen; duplicat
       width={dimensions.width}
       height={dimensions.height}
       className={cls}
-      loading={isLcp ? "eager" : "lazy"}
+      loading={duplicate ? "lazy" : "eager"}
       fetchPriority={isLcp ? "high" : duplicate ? "low" : undefined}
       decoding="async"
     />
   );
-};
-
-const textReveal = {
-  initial: { opacity: 0, y: 28 },
-  animate: { opacity: 1, y: 0 },
 };
 
 export const Hero = () => {
@@ -78,12 +74,12 @@ export const Hero = () => {
         <div className="grid grid-cols-1 items-start gap-[clamp(2rem,5svh,3rem)] xl:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] xl:items-center xl:gap-8">
           <motion.div
             className="relative z-20 min-w-0 xl:self-center xl:flex xl:flex-col xl:justify-center"
-            style={{ y: reducedMotion ? 0 : typeY }}
+            style={{ y: reducedMotion ? "0%" : typeY }}
           >
             <h1 className="hero-name font-marker text-[clamp(3rem,5.5vw,5rem)] leading-[1.38] tracking-[0.01em] text-white -rotate-1 select-none origin-left mb-2 overflow-visible py-2 pr-4 max-md:pr-0 max-md:origin-center max-md:text-center">
               <span className="sr-only">{portfolio.profile.name}</span>
-              {portfolio.profile.name.split(/\s+/).map((part, index) => (
-                <motion.span
+              {portfolio.profile.name.split(/\s+/).map((part, index, parts) => (
+                <span
                   key={index}
                   aria-hidden="true"
                   className={
@@ -91,33 +87,39 @@ export const Hero = () => {
                       ? "block overflow-visible"
                       : "block overflow-visible text-zinc-300 translate-x-1 sm:translate-x-2"
                   }
-                  initial={import.meta.env.SSR ? false : textReveal.initial}
-                  animate={textReveal.animate}
-                  transition={{ duration: 0.78, delay: index * 0.11, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  {part.toUpperCase()}
-                </motion.span>
+                  {index === parts.length - 1 ? (
+                    <span className="relative inline-block max-w-full pr-11 align-top sm:pr-14 xl:pr-[4.5rem]">
+                      {part.toUpperCase()}
+                      <span className="hero-cat absolute -bottom-1 right-0 size-10 sm:size-12 xl:size-16">
+                        <BlackCatSticker
+                          size={64}
+                          peel
+                          focusable="false"
+                          className="size-full -rotate-12 align-top cursor-default! motion-reduce:transform-none! motion-reduce:transition-none!"
+                        />
+                      </span>
+                    </span>
+                  ) : (
+                    part.toUpperCase()
+                  )}
+                </span>
               ))}
             </h1>
 
-            <motion.div
-              className="mt-[clamp(1.25rem,3svh,1.75rem)] max-w-[60ch] max-md:mx-auto max-md:text-center"
-              initial={import.meta.env.SSR ? false : { opacity: 0, y: 22 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.42, duration: 0.62, ease: [0.16, 1, 0.3, 1] }}
-            >
+            <div className="mt-[clamp(1.25rem,3svh,1.75rem)] max-w-[60ch] max-md:mx-auto max-md:text-center">
               <p className="mt-4 max-w-[52ch] text-[clamp(1.1rem,2.2vw,1.45rem)] font-medium leading-relaxed text-zinc-200 max-md:mx-auto">
                 {portfolio.profile.tagline}
               </p>
               <p className="mt-3 font-sans text-sm font-medium tracking-wide text-zinc-300">
                 {portfolio.profile.role}
               </p>
-            </motion.div>
+            </div>
           </motion.div>
 
           <motion.div
             className="relative z-10 w-full min-w-0 xl:pl-10"
-            style={{ y: reducedMotion ? 0 : wallY }}
+            style={{ y: reducedMotion ? "0%" : wallY }}
             initial={false}
             animate={{ opacity: 1 }}
             aria-label="Selected project interfaces"
@@ -147,13 +149,9 @@ export const Hero = () => {
               <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-linear-to-l from-[#050505] to-transparent z-20" />
               <div
                 ref={marqueeRef}
-                tabIndex={reducedMotion ? 0 : undefined}
+                tabIndex={0}
                 role="region"
-                aria-label={
-                  reducedMotion
-                    ? "Project previews. Scroll to see every image."
-                    : "Project previews"
-                }
+                aria-label="Project previews"
                 className="overflow-hidden motion-reduce:overflow-x-auto focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
               >
                 <div className="marquee-track flex w-max" data-paused={!marqueeActive}>
@@ -188,12 +186,7 @@ export const Hero = () => {
           </motion.div>
         </div>
 
-        <motion.div
-          className="relative z-20 mt-[clamp(1rem,3svh,2rem)] grid gap-6 border-t border-white/12 pt-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end"
-          initial={import.meta.env.SSR ? false : { opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.62, duration: 0.58, ease: [0.16, 1, 0.3, 1] }}
-        >
+        <div className="relative z-20 mt-[clamp(1rem,3svh,2rem)] grid gap-6 border-t border-white/12 pt-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             {portfolio.sections.work.enabled && (
               <Button
@@ -230,7 +223,7 @@ export const Hero = () => {
               </div>
             ))}
           </dl>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

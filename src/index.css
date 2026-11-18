@@ -258,6 +258,31 @@
 .hero-name {
   overflow-wrap: anywhere;
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-name {
+    animation: hero-wordmark-in 360ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hero-cat {
+    animation: hero-cat-in 280ms cubic-bezier(0.16, 1, 0.3, 1) 360ms backwards;
+  }
+}
+
+@keyframes hero-wordmark-in {
+  from {
+    opacity: 0.75;
+    translate: 0 10px;
+  }
+}
+
+@keyframes hero-cat-in {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) rotate(-7deg);
+  }
+}
+
 .portfolio-navigation:focus-within {
   opacity: 1 !important;
   transform: none !important;

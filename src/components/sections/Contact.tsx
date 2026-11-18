@@ -12,10 +12,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { SectionHeader } from "@/components/SectionHeader";
 import { SocialDock } from "@/components/SocialDock";
+import { FishSticker } from "stick-it-up";
 
 const currentYear = new Date().getFullYear();
 
 export const Contact = () => {
+  const [showPrintColor, setShowPrintColor] = useState(false);
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [error, setError] = useState<string | null>(null);
   const mountedRef = useRef(false);
@@ -136,7 +138,7 @@ export const Contact = () => {
               </div>
             </Card>
 
-            <Card className="group p-3 bg-[#0b0b10] border border-white/10 rounded-2xl overflow-hidden rotate-1 hover:rotate-0 transition-transform duration-500 hover:border-white/20 select-none flex-1 flex flex-col min-h-0">
+            <Card className="group relative p-3 bg-[#0b0b10] border border-white/10 rounded-2xl rotate-1 select-none flex-1 flex flex-col min-h-0">
               <div className="relative w-full h-full min-h-[260px] rounded-xl overflow-hidden bg-[#09090d]">
                 <img
                   src={assetUrl(portfolio.contact.image)}
@@ -144,7 +146,7 @@ export const Contact = () => {
                   width={626}
                   height={626}
                   style={{ objectPosition: "center 52%" }}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="absolute inset-0 w-full h-full object-cover"
                   loading="lazy"
                   decoding="async"
                 />
@@ -158,7 +160,7 @@ export const Contact = () => {
                     loading="lazy"
                     decoding="async"
                     style={{ objectPosition: "center 52%" }}
-                    className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out group-hover:opacity-0 group-hover:scale-105"
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[420ms] ease-out group-hover:opacity-0 motion-reduce:transition-none ${showPrintColor ? "opacity-0" : "opacity-100"}`}
                     aria-hidden="true"
                   />
                 )}
@@ -172,7 +174,25 @@ export const Contact = () => {
                     {portfolio.contact.imageCaption}
                   </span>
                 </div>
+                {portfolio.contact.ditherImage && (
+                  <button
+                    type="button"
+                    aria-label="Show illustration in color"
+                    aria-pressed={showPrintColor}
+                    onClick={() => setShowPrintColor((current) => !current)}
+                    className="absolute inset-0 z-20 cursor-pointer rounded-xl focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white"
+                  />
+                )}
               </div>
+              {(
+                <FishSticker
+                  size={56}
+                  peel
+                  aria-hidden="true"
+                  focusable="false"
+                  className="absolute -top-2 right-3 z-20 size-11 rotate-12 cursor-default! motion-reduce:transform-none! motion-reduce:transition-none! sm:size-14"
+                />
+              )}
             </Card>
           </div>
 

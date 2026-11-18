@@ -1,18 +1,14 @@
 import { renderToString } from "react-dom/server";
 import { StaticRouter } from "react-router-dom";
-import { MotionConfig } from "framer-motion";
-import Index from "./pages/Index";
+import App from "./App";
 import Insights from "./pages/Insights";
+import NotFound from "./pages/NotFound";
+
+export const renderNotFound = () => renderToString(<NotFound />);
 
 export const render = (pathname: string) =>
   renderToString(
-    <MotionConfig reducedMotion="always">
-      <StaticRouter location={pathname} basename={import.meta.env.BASE_URL}>
-        {pathname.replace(import.meta.env.BASE_URL, "/").replace(/\/$/, "") === "/insights" ? (
-          <Insights />
-        ) : (
-          <Index />
-        )}
-      </StaticRouter>
-    </MotionConfig>,
+    <StaticRouter location={pathname} basename={import.meta.env.BASE_URL}>
+      <App InsightsPage={Insights} />
+    </StaticRouter>,
   );

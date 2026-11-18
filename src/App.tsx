@@ -1,9 +1,9 @@
 import { portfolio } from "@/config/portfolio";
-import { Suspense, lazy, useEffect, useState, useRef } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { Fragment, Suspense, lazy, useEffect, useState, useRef, type ComponentType } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { pageMetadata } from "@/lib/metadata";
 import { scrollToSection } from "@/lib/scroll";
-import { MotionConfig } from "framer-motion";
+import { AnimatePresence, MotionConfig } from "framer-motion";
 import Index from "./pages/Index";
 const FloatingCat = lazy(() =>
   import("@/components/layout/FloatingCat").then((module) => ({ default: module.FloatingCat })),
@@ -72,33 +72,35 @@ const RouteEffects = () => {
   return null;
 };
 
-const App = () => (
+const App = ({ InsightsPage = Insights }: { InsightsPage?: ComponentType }) => (
   <MotionConfig reducedMotion="user">
-    {portfolio.pet.enabled && <EligiblePet />}
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
-      <RouteEffects />
-      <Routes>
-        <Route path="/" element={<Index />} />
-        {portfolio.sections.insights.enabled && (
+    <AnimatePresence initial={false}>
+      <Fragment key="portfolio">
+        {portfolio.pet.enabled && <EligiblePet />}
+        <RouteEffects />
+        <Routes>
+          <Route path="/" element={<Index />} />
+          {portfolio.sections.insights.enabled && (
+            <Route
+              path="/insights"
+              element={
+                <Suspense fallback={<RouteLoader />}>
+                  <InsightsPage />
+                </Suspense>
+              }
+            />
+          )}
           <Route
-            path="/insights"
+            path="*"
             element={
               <Suspense fallback={<RouteLoader />}>
-                <Insights />
+                <NotFound />
               </Suspense>
             }
           />
-        )}
-        <Route
-          path="*"
-          element={
-            <Suspense fallback={<RouteLoader />}>
-              <NotFound />
-            </Suspense>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </Fragment>
+    </AnimatePresence>
   </MotionConfig>
 );
 export default App;

@@ -5,7 +5,7 @@ import { assetUrl } from "@/lib/assets";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -20,6 +20,7 @@ const navHref = (href: string) =>
     : href.startsWith("/")
       ? `${import.meta.env.BASE_URL}${href.slice(1)}`
       : href;
+const subscribe = () => () => {};
 
 export const Header = () => {
   const { scrollY } = useScroll();
@@ -27,6 +28,11 @@ export const Header = () => {
   const [focusWithin, setFocusWithin] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const portaled = useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
   const location = useLocation();
   const navigate = useNavigate();
   const [visibleSection, setVisibleSection] = useState<string>("#hero");
@@ -295,7 +301,7 @@ export const Header = () => {
     </>
   );
 
-  return import.meta.env.SSR
+  return !portaled
     ? navigation
     : createPortal(
         <div

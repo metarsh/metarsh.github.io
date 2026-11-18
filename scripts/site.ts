@@ -133,7 +133,6 @@ export const portfolioSite = (portfolio: PortfolioConfig): Plugin => {
       "llms.txt": summary,
       "llms-full.txt": full,
       _headers: `# Edge hosts only. GitHub Pages does not apply this file.\n/*\n  Content-Security-Policy: ${contentSecurityPolicy()}\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n  Cache-Control: public, max-age=0, must-revalidate\n\n${basePath}assets/*\n  Cache-Control: public, max-age=31536000, immutable\n`,
-      "404.html": `<!doctype html><html lang="${escapeHtml(portfolio.site.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Page not found</title></head><body><p>Page not found. <a href="${escapeHtml(basePath)}">Return to ${escapeHtml(portfolio.site.title)}</a>.</p></body></html>\n`,
       ...(portfolio.site.customDomain ? { CNAME: `${portfolio.site.customDomain}\n` } : {}),
     };
   };
@@ -239,11 +238,7 @@ export const portfolioSite = (portfolio: PortfolioConfig): Plugin => {
         if (Object.hasOwn(files, name)) {
           res.setHeader(
             "Content-Type",
-            name.endsWith(".xml")
-              ? "application/xml"
-              : name.endsWith(".html")
-                ? "text/html"
-                : "text/plain; charset=utf-8",
+            name.endsWith(".xml") ? "application/xml" : "text/plain; charset=utf-8",
           );
           res.end(files[name]);
         } else if (name === "social-card.png" && !portfolio.site.socialImage) {
@@ -272,7 +267,7 @@ export const portfolioSite = (portfolio: PortfolioConfig): Plugin => {
         appType: "custom",
       });
       try {
-        const { render } = await renderer.ssrLoadModule("/src/entry-static.tsx");
+        const { render, renderNotFound } = await renderer.ssrLoadModule("/src/entry-static.tsx");
         for (const pathname of [
           "/",
           ...(portfolio.sections.insights.enabled ? ["/insights/"] : []),
@@ -289,6 +284,15 @@ export const portfolioSite = (portfolio: PortfolioConfig): Plugin => {
           await fs.promises.mkdir(path.dirname(destination), { recursive: true });
           await fs.promises.writeFile(destination, html);
         }
+        const notFound = path.join(outputDirectory, "404.html");
+        const notFoundTemplate = await fs.promises.readFile(notFound, "utf8");
+        await fs.promises.writeFile(
+          notFound,
+          notFoundTemplate.replace(
+            '<div id="root"></div>',
+            () => `<div id="root">${renderNotFound()}</div>`,
+          ),
+        );
       } finally {
         await renderer.close();
       }
