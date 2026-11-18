@@ -5,7 +5,6 @@ import { assetUrl } from "@/lib/assets";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { SectionHeader } from "@/components/SectionHeader";
-import { Card } from "@/components/ui/card";
 
 type CuteParticle = {
   id: number;
@@ -78,11 +77,11 @@ const CompanionCard = () => {
   };
 
   return (
-    <Card
+    <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
-      className="group lg:sticky lg:top-28 p-3.5 bg-[#0b0b10] border border-white/10 rounded-2xl relative overflow-visible hover:border-white/25 transition-all duration-300 cursor-pointer select-none"
+      className="group relative cursor-pointer select-none lg:sticky lg:top-28"
     >
       <div
         className="absolute inset-0 pointer-events-none overflow-visible z-30"
@@ -137,7 +136,7 @@ const CompanionCard = () => {
           </span>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 

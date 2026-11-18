@@ -212,7 +212,7 @@ export const Hero = () => {
           </motion.div>
         </div>
 
-        <div className="relative z-20 mt-[clamp(1rem,3svh,2rem)] grid gap-6 border-t border-white/12 pt-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <div className="relative z-20 mt-[clamp(1rem,3svh,2rem)] grid gap-6 pt-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             {portfolio.sections.work.enabled && (
               <Button
@@ -240,10 +240,10 @@ export const Hero = () => {
             style={{
               gridTemplateColumns: `repeat(${Math.max(1, proofPoints.length)}, minmax(0, 1fr))`,
             }}
-            className="grid divide-x divide-white/[0.08] xl:min-w-[520px]"
+            className="grid gap-x-6 xl:min-w-[520px]"
           >
             {proofPoints.map(([value, label]) => (
-              <div key={label} className="min-w-0 px-4 first:pl-0 last:pr-0">
+              <div key={label} className="min-w-0">
                 <dt className="text-2xl font-bold text-white sm:text-3xl font-sans">{value}</dt>
                 <dd className="mt-1 font-sans text-xs text-muted-foreground">{label}</dd>
               </div>

@@ -103,10 +103,10 @@ const DockIcon = ({ item, register, reducedMotion }: DockIconProps) => {
           }}
           aria-label={copied ? "Email copied to clipboard!" : "Copy email address"}
           title={copied ? "Copied!" : `Click to copy email (${item.href.replace(/^mailto:/, "")})`}
-          className={`group relative flex items-center justify-center rounded-full border transition-[color,background-color,border-color,translate] duration-150 motion-safe:active:translate-y-0.5 shadow-lg cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white shrink-0 ${
+          className={`group relative flex items-center justify-center rounded-full transition-[color,background-color,translate] duration-150 motion-safe:active:translate-y-0.5 cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white shrink-0 ${
             copied
-              ? "bg-emerald-500/20 border-emerald-400/50 text-emerald-300 shadow-emerald-900/30"
-              : "bg-white/[0.04] border-white/10 text-zinc-300 hover:text-white hover:bg-white/[0.09] hover:border-white/25"
+              ? "bg-emerald-500/20 text-emerald-300"
+              : "text-zinc-300 hover:text-white hover:bg-white/[0.09]"
           }`}
         >
           <motion.div
@@ -167,7 +167,7 @@ const DockIcon = ({ item, register, reducedMotion }: DockIconProps) => {
         y: reducedMotion ? 0 : y,
       }}
       aria-label={item.label}
-      className="group relative flex items-center justify-center rounded-full bg-white/[0.04] border border-white/10 text-zinc-300 hover:text-white hover:bg-white/[0.09] hover:border-white/25 transition-colors shadow-lg cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white shrink-0"
+      className="group relative flex items-center justify-center rounded-full text-zinc-300 hover:text-white hover:bg-white/[0.09] transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white shrink-0"
     >
       <motion.div
         style={{ width: 18, height: 18, scale: reducedMotion ? 1 : iconScale }}
@@ -225,7 +225,7 @@ export const SocialDock = ({
       }}
       onPointerLeave={reset}
       onPointerCancel={reset}
-      className={`relative inline-flex flex-wrap max-w-full items-center min-h-[74px] gap-2 sm:gap-2.5 px-3 sm:px-3.5 rounded-full bg-white/[0.025] border border-white/10 backdrop-blur-xs shadow-xl ${className}`}
+      className={`relative inline-flex max-w-full flex-wrap items-center gap-1 py-2 ${className}`}
       role="group"
       aria-label="Social profile quick links"
     >

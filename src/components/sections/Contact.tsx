@@ -1,11 +1,10 @@
 import { scrollToSection } from "@/lib/scroll";
-import { ArrowRight, Loader2, CheckCircle } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Loader2, CheckCircle } from "lucide-react";
 import { SiGithub } from "react-icons/si";
 import { portfolio, templateFormEndpoint, templateRecaptchaSiteKey } from "@/config/portfolio";
 import { assetUrl } from "@/lib/assets";
 import { recaptchaToken } from "@/lib/recaptcha";
 import { useEffect, useRef, useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -116,30 +115,28 @@ export const Contact = () => {
       <div className="max-w-7xl mx-auto relative z-10">
         <SectionHeader align="center" className="mb-10" title={portfolio.sections.contact.title} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
-          <div className="flex flex-col h-full space-y-4">
-            <Card className="p-3.5 sm:p-4 bg-[#0b0b10] border border-white/10 rounded-2xl shadow-xl shrink-0">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
-                <div className="shrink-0">
-                  <h3 className="text-lg sm:text-xl font-serif gradient-heading tracking-tight">
-                    Direct Channels
-                  </h3>
-                  <a
-                    href={`mailto:${portfolio.profile.email}`}
-                    className="break-all text-xs text-zinc-300 mt-0.5 font-sans hover:text-white"
-                  >
+        <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-14">
+          <div className="flex min-w-0 flex-col gap-4">
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+              <div className="min-w-0">
+                <h3 className="text-2xl sm:text-3xl font-serif gradient-heading tracking-tight">
+                  Direct Channels
+                </h3>
+                <a
+                  href={`mailto:${portfolio.profile.email}`}
+                  className="group mt-2 inline-flex max-w-full items-center gap-2 font-sans text-sm text-zinc-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                >
+                  <span className="min-w-0 wrap-anywhere underline-offset-4 group-hover:underline">
                     {portfolio.profile.email}
-                  </a>
-                </div>
-
-                <div className="flex min-w-0 items-center justify-start sm:justify-end py-2">
-                  <SocialDock />
-                </div>
+                  </span>
+                  <ArrowUpRight className="size-3.5 shrink-0 text-zinc-400" aria-hidden="true" />
+                </a>
               </div>
-            </Card>
+              <SocialDock />
+            </div>
 
-            <Card className="group relative p-3 bg-[#0b0b10] border border-white/10 rounded-2xl rotate-1 select-none flex-1 flex flex-col min-h-0">
-              <div className="relative w-full h-full min-h-[260px] rounded-xl overflow-hidden bg-[#09090d]">
+            <div className="group relative select-none">
+              <div className="relative aspect-[5/3] w-full overflow-clip rounded-2xl bg-[#09090d]">
                 <img
                   src={assetUrl(portfolio.contact.image)}
                   alt={portfolio.contact.imageAlt}
@@ -180,7 +177,7 @@ export const Contact = () => {
                     aria-label="Show illustration in color"
                     aria-pressed={showPrintColor}
                     onClick={() => setShowPrintColor((current) => !current)}
-                    className="absolute inset-0 z-20 cursor-pointer rounded-xl focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white"
+                    className="absolute inset-0 z-20 cursor-pointer rounded-2xl focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white"
                   />
                 )}
               </div>
@@ -193,11 +190,14 @@ export const Contact = () => {
                   className="absolute -top-2 right-3 z-20 size-11 rotate-12 cursor-default! motion-reduce:transform-none! motion-reduce:transition-none! sm:size-14"
                 />
               }
-            </Card>
+            </div>
           </div>
 
-          <Card className="p-6 bg-[#0b0b10] border border-white/10 rounded-2xl shadow-xl h-full flex flex-col">
-            <h3 className="text-2xl sm:text-3xl font-serif mt-0.5 mb-3 gradient-heading tracking-tight">
+          <div className="flex min-w-0 flex-col rounded-2xl border border-white/12 bg-[#0b0b10] p-5 sm:p-6">
+            <h3
+              id="contact-form-title"
+              className="text-2xl sm:text-3xl font-serif mb-3 gradient-heading tracking-tight"
+            >
               Drop a note
             </h3>
             {!portfolio.contact.formEndpoint ? (
@@ -229,7 +229,7 @@ export const Contact = () => {
                 action={portfolio.contact.formEndpoint}
                 method="post"
                 onSubmit={handleSubmit}
-                aria-label="Contact form"
+                aria-labelledby="contact-form-title"
                 data-purpose="contact-form"
                 className="contact-form space-y-3 flex-1 flex flex-col"
               >
@@ -315,7 +315,7 @@ export const Contact = () => {
                 </Button>
               </form>
             )}
-          </Card>
+          </div>
         </div>
 
         <footer className="mt-12">
